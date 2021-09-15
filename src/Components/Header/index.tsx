@@ -1,7 +1,8 @@
 import { FC, useState } from 'react'
 import { observer } from 'mobx-react'
-import { Button, DropdownSelector } from '@opiumteam/react-opium-components'
+import { Button, DropdownSelector, OpiumLink, ETheme } from '@opiumteam/react-opium-components'
 import authStore from '../../Services/Stores/AuthStore'
+import appStore from '../../Services/Stores/AppStore'
 import { AuthType } from '@opiumteam/mobx-web3'
 
 import './styles.scss'
@@ -22,7 +23,7 @@ const Header: FC<{}> = () => {
     authStore.changeNetwork(dropdownItems[+index].title, +dropdownItems[+index].value)
   }
 
-  const { requiredNetworkName, currentNetworkName} = authStore.blockchainStore
+  const { requiredNetworkName, currentNetworkName, address} = authStore.blockchainStore
 
   return (
     <div className='header-wrapper'>
@@ -37,18 +38,15 @@ const Header: FC<{}> = () => {
         <div>You current network: {currentNetworkName}</div>
       </div>
       <div className='header-buttons-wrapper'>
-        <Button 
-          variant='primary' 
-          label={(authStore.loggedIn && authStore.blockchainStore.address) ? authStore.blockchainStore.address : 'Connect wallet'} 
-          onClick={() => authStore.blockchainStore.login(AuthType.INJECTED)} 
-        />
+      <Button variant='secondary' label='reload balance' onClick={appStore.fillBalanceReaction}/>
         {(authStore.loggedIn && authStore.blockchainStore.address) && 
-        <Button 
-          variant='primary' 
-          label='logout' 
-          onClick={() => authStore.blockchainStore.logout()} 
-        />
+        <OpiumLink theme={ETheme.DARK} newTab={true} label={address} href={`https://etherscan.io/address/${address}`} />
       }
+      <Button 
+        variant='primary' 
+        label={(authStore.loggedIn && address) ? 'logout' : 'login'} 
+        onClick={(authStore.loggedIn && address) ? () => authStore.blockchainStore.logout() : () => authStore.blockchainStore.login(AuthType.INJECTED)} 
+      />
       </div>
     </div>
   )

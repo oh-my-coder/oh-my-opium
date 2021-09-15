@@ -6,7 +6,7 @@
   padding: 0 5rem;
   align-items: center;
   justify-content: space-between;
-  background-color: rgb(33, 37, 41);
+  background-color: #0A0A1E;
 
   .header-title {
     font-size: 20px;
@@ -14,8 +14,14 @@
   }
   
   .header-buttons-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     & > * {
-      margin-left: 1rem;
+      margin-left: 2rem;
+    }
+    a {
+      color: white;
     }
   }
 

@@ -80,13 +80,22 @@ export const unstakeFromPool = async (
   return await sendTx(tx, onConfirm, onError)
 }
 
-export const getStakedBalance = async (poolAddress: string, userAddress: string): Promise<number> => {
-  const contract = createStakingContractInstance(poolAddress)
-  return contract?.methods.balanceOf(userAddress).call().then((userShares: string) => {
-    return contract?.methods.calculateSharesToUnderlyingRatio(userShares).call().then((shares: string) => {
-      return contract?.methods.decimals().call().then((decimals: string) => {
-        return +convertFromBN(shares, +decimals)
+export const getStakedBalance = async (poolAddress: string, userAddress: string): Promise<number | string> => {
+  try {
+    const contract = createStakingContractInstance(poolAddress)
+    const tokenAddress = await contract?.methods.underlying().call({from: userAddress})
+    const tokenContract = createTokenContractInstance(tokenAddress)
+    return await contract?.methods.balanceOf(userAddress).call().then((userShares: string) => {
+      return contract?.methods.calculateSharesToUnderlyingRatio(userShares).call().then((shares: string) => {
+        return contract?.methods.decimals().call().then((decimals: string) => {
+          return tokenContract?.methods.symbol().call().then((symbol: string) => {
+            return`${Number(convertFromBN(shares, +decimals)).toFixed(3)} ${symbol}`
+          })
+        })
       })
     })
-  })
+  } catch (error: any) {
+    console.log({error})
+    return 'Unable to fetch balance'
+  }
 }

@@ -1,11 +1,10 @@
 import React, { FC, useState } from 'react'
 import { observer } from 'mobx-react'
 import { useAlert } from 'react-alert'
-import { Button } from '@opiumteam/react-opium-components'
+import { Button, OpiumLink, ETheme } from '@opiumteam/react-opium-components'
 import appStore from '../../Services/Stores/AppStore'
 import authStore from '../../Services/Stores/AuthStore'
 import { stakeIntoPool, checkAllowance, makeApprove, unstakeFromPool } from '../../Services/Utils/methods'
-import Input from '../Input'
 
 import './styles.scss'
 
@@ -33,31 +32,27 @@ const PoolsList: FC<{}> = () => {
 
   
   const makeWithdrawal = async (pool: {title: string, poolAddress: string}) => {
-    const tokenAllowed = await checkAllowance(value, pool.poolAddress, userAddress)
-    if (!tokenAllowed) {
-      makeApprove(
-        pool.poolAddress, 
-        userAddress, 
-        () => unstakeFromPool(value, pool.poolAddress, userAddress, () => alert.success('Token was successfully approved'), (e) => alert.error(e.message)),
-        (e) => alert.error(e.message)
-        )
-    } else {
-      unstakeFromPool(value, pool.poolAddress, userAddress, () => alert.success('Successfully unstaked'), (e) => alert.error(e.message))
-    }
+    unstakeFromPool(value, pool.poolAddress, userAddress, () => alert.success('Successfully unstaked'), (e) => alert.error(e.message))
   }
 
+
+  const getBalance = (poolAddress: string) => {
+    const pool = appStore.poolsWithBalance.find(pool => Object.keys(pool)[0] === poolAddress)
+    return pool ? pool[poolAddress] : 0
+  }
+  
   return (
     <div className='pools-list-wrapper'>
       {appStore.poolsByNetwork.map((pool) => {
-        return <div className='pools-list-item-wrapper'>
+        return <div className='pools-list-item-wrapper' key={pool.title}>
           <div className='pools-list-item-title'>{pool.title}</div>
-          <div className='pools-list-item-address'>Address: {pool.poolAddress}</div>
-          <div>
-          <Input onChange={setValue} />
-            </div>
+          <div className='pools-list-item-address'>Address: <OpiumLink theme={ETheme.DARK} newTab={true} label={pool.poolAddress} href={`https://etherscan.io/address/${pool.poolAddress}`} /></div>
+          
+          <div className='pools-list-item-balance'>Balance: <div>{appStore.balanceIsLoading ? 'Loading...' : getBalance(pool.poolAddress)}</div></div>
+          <div className='pools-list-item-input'>Amount: <input type='number' onChange={e => setValue(+e.target.value)} /></div>
           <div className='pools-list-item-buttons-wrapper'>
-            <Button variant='primary' label='Stake' onClick={() => makeDeposit(pool)} disabled={requiredNetworkName !== currentNetworkName}/>
-            <Button variant='secondary' label='Unstake' onClick={() => makeWithdrawal(pool)} disabled={requiredNetworkName !== currentNetworkName}/>
+            <Button variant='primary' label='stake' onClick={() => makeDeposit(pool)} disabled={requiredNetworkName !== currentNetworkName}/>
+            <Button variant='secondary' label='unstake' onClick={() => makeWithdrawal(pool)} disabled={requiredNetworkName !== currentNetworkName}/>
           </div>
         </div>
       })}
