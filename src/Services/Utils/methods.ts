@@ -1,6 +1,7 @@
-import { createStakingContractInstance, createTokenContractInstance } from './contract'
+import { createStakingContractInstance, createTokenContractInstance, createOpiumIERC20PositionContractInstance } from './contract'
 import { convertFromBN, convertToBN } from './bn'
 import { sendTx } from './transaction'
+import { PoolType, PositionType } from './types'
 
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
@@ -74,9 +75,97 @@ export const unstakeFromPool = async (
 
   // Create withdrawal tx
   const decimals = await stakingContract?.methods.decimals().call()
+  const tx = stakingContract?.methods.withdraw(convertToBN(value, +decimals)).send({ from: userAddress })
 
   // Send tx
-  const tx = stakingContract?.methods.withdraw(convertToBN(value, +decimals)).send({ from: userAddress })
+  return await sendTx(tx, onConfirm, onError)
+}
+
+export const buyProduct = async (
+  value: number,
+  pool: PoolType,
+  userAddress: string, 
+  onConfirm: () => void, 
+  onError: (error: Error) => void,
+  onInsufficientLiquidity: () => void
+) => {
+  const { poolAddress, nominal } = pool
+
+  // Create contracts instances 
+  const stakingContract = createStakingContractInstance(poolAddress)
+
+  // Calculate metadata
+  const decimals = await stakingContract?.methods.decimals().call()
+  const quantity = Math.floor(value/nominal)
+  console.log({quantity})
+
+  // Calculate premium
+  let premiumBN
+  try {
+    premiumBN = await stakingContract?.methods.getRequiredPremium(quantity).call()
+  } catch {
+    return onInsufficientLiquidity()
+  }
+  const premium = +convertFromBN(premiumBN, decimals)
+  console.log({premium})
+
+  // Send tx
+  const tx = stakingContract?.methods.hedge(
+    quantity,
+    convertToBN(premium * 1.05, decimals)).send({ from: userAddress })
+  return await sendTx(tx, onConfirm, onError)
+}
+
+
+
+export const getPurchasedProducts = async (
+  poolAddress: string,
+  userAddress: string,
+  onError: (error: any) => void,
+  ) => {
+  const decimals = 18
+
+  // Create contracts instance
+  const stakingContract = createStakingContractInstance(poolAddress)
+
+  // Retrieve events and get balance
+  try {
+    return stakingContract?.getPastEvents('LongPositionWrapper', {fromBlock: 0, toBlock: 'latest'}).then(async (events) => {
+      const balances: { balance: string, address: string, blockNumber: number}[] = await Promise.all(events.map(async (event) => {
+        const wrapperContract = createTokenContractInstance(event.returnValues.wrapper)
+        const balance = await wrapperContract?.methods.balanceOf(userAddress).call()
+        return { balance, address: event.returnValues.wrapper, blockNumber: event.blockNumber}
+      }))
+
+      // Remove zero balance and convert from BigNumber
+      const modifiedBalances: { balance: number, address: string, blockNumber: number}[] = balances.filter(el => +el.balance).map(el => ({ ...el, balance: +convertFromBN(el.balance, decimals)}))
+  
+      // Get endTime
+      const finalizedBalances: PositionType[] = await Promise.all(modifiedBalances.map(async (el) => {
+        const der = await stakingContract?.methods.derivative().call(undefined, el.blockNumber+1)
+        return {...el, endTime: der.endTime}
+      }))
+      return finalizedBalances
+    })
+  } catch (error) {
+    console.log({error})
+    onError(error)
+  }
+}
+
+export const withdrawPosition = async (
+  position: PositionType, 
+  userAddress: string, 
+  onConfirm: () => void, 
+  onError: (error: Error) => void
+) => {
+  // Create contracts instances 
+  const positionContract = createOpiumIERC20PositionContractInstance(position.address)
+
+  // Create withdrawal tx
+  const tx = positionContract?.methods.withdraw().send({from: userAddress})
+
+  // Send tx
   return await sendTx(tx, onConfirm, onError)
 }
 

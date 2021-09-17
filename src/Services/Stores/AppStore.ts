@@ -2,6 +2,7 @@ import { action, computed, observable, reaction } from "mobx"
 import authStore from "./AuthStore"
 import { ethPools, bscPools, polygonPools } from './../DataBase/pools'
 import { getStakedBalance } from '../Utils/methods'
+import { PoolType } from '../Utils/types'
 
 export class AppStore {
 
@@ -11,7 +12,7 @@ export class AppStore {
 
 
 
-  private _poolsByNetwork: {[key: number]: Array<{title: string, poolAddress: string}>} = {
+  private _poolsByNetwork: {[key: number]: PoolType[]} = {
     1: ethPools,
     56: bscPools,
     137: polygonPools
@@ -23,6 +24,9 @@ export class AppStore {
 
   @action
   fillBalanceReaction = async () => {
+    if ((authStore.blockchainStore.requiredNetworkName !== authStore.blockchainStore.currentNetworkName) || !authStore.blockchainStore.address) {
+      return
+    }
     this.setBalanceIsLoading(true)
     this.poolsWithBalance = await Promise.all(this.poolsByNetwork.map( async (pool) => {
       const balance = await getStakedBalance(pool.poolAddress, authStore.blockchainStore.address)
@@ -32,7 +36,7 @@ export class AppStore {
   }
 
   @computed
-  get poolsByNetwork(): Array<{title: string, poolAddress: string}> {
+  get poolsByNetwork(): PoolType[] {
     return this._poolsByNetwork[authStore.networkId]
   }
 
