@@ -6,7 +6,7 @@ import config from '../Config'
 // Utils
 export class AuthStore {
   @observable public loggedIn = false
-  @observable public networkId = 1
+  @observable public networkId = 137
   @observable public blockchainStore: BlockchainStore
   @observable public blockchain: Blockchain
   

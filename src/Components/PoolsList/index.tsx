@@ -39,7 +39,7 @@ const PoolsList: FC<{}> = () => {
   return (
     <div className='pools-list-wrapper'>
       <Popup
-        theme={ETheme.DARK}
+        theme={ETheme.LIGHT}
         titleSize="lg"
         title="Purchased products"
         subtitle={positionProductTitle}

@@ -33,7 +33,7 @@ const PositionsList: FC<Props> = (props: Props) => {
         const date = convertDateFromTimestamp(position.endTime, 'DD-MMM-YY')
         return (
           <div className='position-item-wrapper' key={i}>
-            <div className='position-item-address'>Position address: <OpiumLink theme={ETheme.DARK} newTab={true} label={position.address} href={getScanLink(position.address, authStore.networkId)} /></div>
+            <div className='position-item-address'>Position address: <OpiumLink theme={ETheme.LIGHT} newTab={true} label={position.address} href={getScanLink(position.address, authStore.networkId)} /></div>
             <div>Insured amount: <br/>{position.balance}</div>
             <div className={`${isExpired ? 'red-date' : 'green-date'}`}>{isExpired ? `Expired at ${date}` : `Will expire at ${date}`}</div>
             <div>

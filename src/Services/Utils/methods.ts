@@ -246,18 +246,18 @@ export const getPoolPhase = async (poolAddress: string) => {
 }
 
 export const checkPhase = async (poolAddress: string, currentPhase: string) => {
-  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'NOT INITIALIZED') {
+  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'WAITING') {
     return {
       isStaking: currentPhase === 'REBALANCING',
       isTrading:  currentPhase === 'TRADING',
-      isNotInitialized: currentPhase === 'NOT INITIALIZED'
+      isNotInitialized: currentPhase === 'WAITING'
     }
   }
   const phases = await getPoolPhase(poolAddress)
   return {
     isStaking: phases.currentPhaseText === 'REBALANCING',
     isTrading:  phases.currentPhaseText === 'TRADING',
-    isNotInitialized: phases.currentPhaseText === 'NOT INITIALIZED'
+    isNotInitialized: phases.currentPhaseText === 'WAITING'
   }
 
 }

@@ -4,13 +4,12 @@ import { AuthType } from '@opiumteam/mobx-web3'
 import { Button, DropdownSelector, OpiumLink, ETheme } from '@opiumteam/react-opium-components'
 import authStore from '../../Services/Stores/AuthStore'
 import { getScanLink } from '../../Services/Utils/transaction'
+import RealTLogo from '../../Images/realt.svg'
 
 import './styles.scss'
 
 
 const dropdownItems = [
-  { title: 'Ethereum', value: '1' },
-  { title: 'Binance', value: '56' },
   { title: 'Polygon', value: '137' },
 ]
 
@@ -27,22 +26,23 @@ const Header: FC<{}> = () => {
 
   return (
     <div className='header-wrapper'>
-      <div className='header-title'>Oh My Opium</div>
-      <DropdownSelector
+      <img src={RealTLogo} alt='realt' height='100%'/>
+      {/* <DropdownSelector
         title={dropDownTitle}
         items={dropdownItems}
         onSelect={(eventKey) => handleSelect(eventKey)}
-      />
+      /> */}
       <div className={`header-network-wrapper ${requiredNetworkName !== currentNetworkName && 'red-network'}`}>
         <div>Required network: {requiredNetworkName}</div>
         <div>You current network: {currentNetworkName}</div>
       </div>
       <div className='header-buttons-wrapper'>
         {(authStore.loggedIn && authStore.blockchainStore.address) && 
-        <OpiumLink theme={ETheme.DARK} newTab={true} label={address} href={getScanLink(address, authStore.networkId)} />
+        <OpiumLink theme={ETheme.LIGHT} newTab={true} label={address} href={getScanLink(address, authStore.networkId)} />
       }
       <Button 
         variant='primary' 
+        theme={ETheme.LIGHT}
         label={(authStore.loggedIn && address) ? 'logout' : 'login'} 
         onClick={(authStore.loggedIn && address) ? () => authStore.blockchainStore.logout() : () => authStore.blockchainStore.login(AuthType.INJECTED)} 
       />

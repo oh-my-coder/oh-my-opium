@@ -57,12 +57,6 @@ const PoolsList: FC<Props> = (props: Props) => {
   const userAddress = authStore.blockchainStore.address
 
   const makeStake = async () => {
-    const { isStaking } = await checkPhase(pool.poolAddress, phaseInfo.currentPhaseText)
-    if (!isStaking) {
-      alert.error('Stakings is available only during rebalancing phase')
-      return
-    }
-
     const insufficientBalance = await checkTokenBalance(pool.poolAddress, userAddress, stakeValue)
     if (insufficientBalance) {
       alert.error('Insufficient balance')
@@ -135,8 +129,8 @@ const PoolsList: FC<Props> = (props: Props) => {
   return (
     <div className='pools-list-item-wrapper' key={pool.title}>
       <div className='pools-list-item-first-column'>
-        <div>{pool.title}</div>
-        <div className='pools-list-item-address'><OpiumLink theme={ETheme.DARK} newTab={true} label={pool.poolAddress} href={getScanLink(pool.poolAddress, authStore.networkId)} /></div>
+        <div className='pools-list-item-first-column-title'>{pool.title}</div>
+        <div className='pools-list-item-address'><OpiumLink theme={ETheme.LIGHT} newTab={true} label={pool.poolAddress} href={getScanLink(pool.poolAddress, authStore.networkId)} /></div>
         {pool.isSuspended ? <div>Pool is suspended</div> : <div className='pools-list-item-phase-wrapper'>
           <div className='pools-list-item-phase'>Current phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.currentPhaseText}</div>
           <div className='pools-list-item-phase'>Rebalancing phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingPhase}</div>
@@ -148,8 +142,8 @@ const PoolsList: FC<Props> = (props: Props) => {
       <div className='pools-list-item-second-column'>
         <div className='pools-list-item-input'>Amount to stake: <input type='number' onChange={e => setStakeValue(+e.target.value)} /></div>
         <div className='pools-list-item-second-column-buttons-wrapper'>
-          <Button variant='primary' label='stake' onClick={makeStake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
-          <Button variant='secondary' label='unstake' onClick={makeUnstake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+          <Button theme={ETheme.LIGHT} variant='secondary' className='green' label='stake' onClick={makeStake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+          <Button theme={ETheme.LIGHT} variant='secondary' label='unstake' onClick={makeUnstake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
         </div>
         <div className='pools-list-item-balance'>
           <div>Staked balance: </div>
@@ -159,18 +153,18 @@ const PoolsList: FC<Props> = (props: Props) => {
 
       <div className='pools-list-item-third-column'>
         <div className='pools-list-item-input'>Amount to protect: <input type='number' onChange={e => setProtectValue(+e.target.value)} /></div>
-        <Button variant='primary' label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+        <Button theme={ETheme.LIGHT} variant='secondary' className='green' label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
         <div className='pools-list-item-purchase'>
           <div>Purchased products: </div>
-          <Button  size="sm" variant='secondary' className='blue' label='check' onClick={showPurchasedProducts} disabled={appStore.requestsAreNotAllowed || (requiredNetworkName === 'Binance Smart Chain') || (requiredNetworkName === 'Polygon Network')}/>
+          <Button  theme={ETheme.LIGHT} size="sm" variant='secondary' className='blue' label='check' onClick={showPurchasedProducts} disabled={appStore.requestsAreNotAllowed || (requiredNetworkName === 'Binance Smart Chain') || (requiredNetworkName === 'Polygon Network')}/>
         </div>
       </div>
 
       <div className='pools-list-item-fourth-column'>
           <div>Load pool's data: </div>
           <div className='pools-list-item-fourth-column-buttons-wrapper'>
-            <Button variant='secondary' className='blue' label='staked balance' onClick={loadBalance} disabled={appStore.requestsAreNotAllowed}/>
-            <Button variant='secondary' className='blue' label='phases' onClick={loadPhase} disabled={appStore.requestsAreNotAllowed}/>
+            <Button theme={ETheme.LIGHT} variant='secondary' className='blue' label='staked balance' onClick={loadBalance} disabled={appStore.requestsAreNotAllowed}/>
+            <Button theme={ETheme.LIGHT} variant='secondary' className='blue' label='phases' onClick={loadPhase} disabled={appStore.requestsAreNotAllowed}/>
           </div>
       </div>
     </div>

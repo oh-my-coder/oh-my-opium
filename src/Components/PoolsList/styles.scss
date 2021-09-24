@@ -10,13 +10,13 @@
   flex-direction: column;
   align-items: center;
   font-size: 13px;
-  background-color: #0A0A1E;
+  background-color: white;
 
 
   
   .pools-list-item-wrapper {
-    background-color: rgba(78, 62, 122, 0.2);
-    color: white;
+    background-color: white;
+    color: #0A0A1E;
     margin: .2rem auto;
     padding: 0 2rem;
     width: 90%;
@@ -24,21 +24,27 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    border: #2F4273 solid 2px;
     
     height: 12rem;
     border-radius: 10px;
 
     .pools-list-item-first-column {
-      width: 25%;
+      width: 27%;
       font-size: 12px;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
+
+      .pools-list-item-first-column-title {
+        font-weight: bold;
+      }
+
       .pools-list-item-address {
         margin-top: 10px;
         a {
-          color: white;
+          color: #0A0A1E;
         }
       }
     }
@@ -107,6 +113,7 @@
         padding-top: 1rem;
         & > * {
           margin-right: 1rem;
+          margin-bottom: 1rem;
         }
       }
     }
@@ -143,8 +150,8 @@
             background-color: transparent !important;
             border: 0;
         }
-        color: white;
-        border-bottom: 1px solid rgba(white, .3) !important;
+        color: #0A0A1E;
+        border-bottom: 1px solid rgba(#0A0A1E, .3) !important;
 
 
         &::-webkit-outer-spin-button,

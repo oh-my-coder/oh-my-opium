@@ -6,11 +6,11 @@
   padding: 0 5rem;
   align-items: center;
   justify-content: space-between;
-  background-color: #0A0A1E;
+  background-color: white;
 
   .header-title {
     font-size: 20px;
-    color: white;
+    color: #0A0A1E;
   }
   
   .header-buttons-wrapper {
@@ -21,12 +21,12 @@
       margin-left: 2rem;
     }
     a {
-      color: white;
+      color: #0A0A1E;
     }
   }
 
   .header-network-wrapper {
-    color: white;
+    color: #0A0A1E;
     display: flex;
     flex-direction: column;
   }

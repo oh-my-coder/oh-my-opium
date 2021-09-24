@@ -21,7 +21,7 @@ const AlertTemplate = ({options, message, close }:any) => (
     justifyContent: 'space-evenly', 
     width: '20rem', 
     height: '4rem', 
-    backgroundColor: (options.type === 'error' ? '#F6029C' : '#2ECD94'), 
+    backgroundColor: (options.type === 'error' ? '#FB80CD' : '#2ECD94'), 
     color: '#0A0A1E',
     padding: '1rem'
   }}>
@@ -34,7 +34,7 @@ function App() {
     <AlertProvider template={AlertTemplate} {...options}>
       <div className="App">
         <MobileView >
-          <div className='mobile-text'>Oh My Opium does not support mobile devices yet. <br/><br/> Please use desktop version.</div>
+          <div className='mobile-text'>Opium RealT UI does not support mobile devices yet. <br/><br/> Please use desktop version.</div>
         </MobileView>
         <BrowserView>
           <Header />
