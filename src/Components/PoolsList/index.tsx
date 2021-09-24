@@ -8,6 +8,7 @@ import {  getPurchasedProducts } from '../../Services/Utils/methods'
 import { PoolType, PositionType } from '../../Services/Utils/types'
 import PositionsList from '../PositionsList'
 import PoolListItem from './poolListItem'
+import Wrapping from '../Wrapping'
 
 import './styles.scss'
 
@@ -48,8 +49,19 @@ const PoolsList: FC<{}> = () => {
         closePopup={closePopup}
         component={<PositionsList positions={positions}/>}
       />
+
+      <Popup
+        theme={ETheme.DARK}
+        titleSize='lg'
+        title='Wrapping'
+        className='positions-list-popup'
+        popupIsOpen={appStore.wrappingPopupIsOpened}
+        closePopup={() => appStore.setWrappingPopupIsOpened(false)}
+        component={<Wrapping />}
+      />
+
       {appStore.poolsByNetwork.map((pool) => {
-        return <PoolListItem pool={pool} showPurchasedProducts={() => showPurchasedProducts(pool)}/>
+        return <PoolListItem pool={pool} showPurchasedProducts={() => showPurchasedProducts(pool)} key={pool.poolAddress}/>
       })}
     </div>
   )

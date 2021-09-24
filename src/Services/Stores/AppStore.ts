@@ -6,6 +6,7 @@ import { PoolType } from '../Utils/types'
 export class AppStore {
 
   @observable requestsAreNotAllowed: boolean = ((authStore.blockchainStore.requiredNetworkName !== authStore.blockchainStore.currentNetworkName) || !authStore.blockchainStore.address)
+  @observable wrappingPopupIsOpened: boolean = false
 
   private _poolsByNetwork: {[key: number]: PoolType[]} = {
     1: ethPools,
@@ -17,6 +18,11 @@ export class AppStore {
     reaction(() => authStore.blockchainStore.address, this.setRequestsAreNotAllowedReaction)
     reaction(() => authStore.blockchainStore.requiredNetworkName, this.setRequestsAreNotAllowedReaction)
     reaction(() => authStore.blockchainStore.currentNetworkName, this.setRequestsAreNotAllowedReaction)
+  }
+
+  @action
+  setWrappingPopupIsOpened = (flag: boolean) => {
+    this.wrappingPopupIsOpened = flag
   }
 
 

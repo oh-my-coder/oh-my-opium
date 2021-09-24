@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import { AuthType } from '@opiumteam/mobx-web3'
 import { Button, DropdownSelector, OpiumLink, ETheme } from '@opiumteam/react-opium-components'
 import authStore from '../../Services/Stores/AuthStore'
+import appStore from '../../Services/Stores/AppStore'
 import { getScanLink } from '../../Services/Utils/transaction'
 
 import './styles.scss'
@@ -38,6 +39,7 @@ const Header: FC<{}> = () => {
         <div>You current network: {currentNetworkName}</div>
       </div>
       <div className='header-buttons-wrapper'>
+        <Button label='wOPIUM' onClick={() => {appStore.setWrappingPopupIsOpened(true)}} disabled={appStore.requestsAreNotAllowed || authStore.blockchainStore.requiredNetworkName !== 'Mainnet'}/>
         {(authStore.loggedIn && authStore.blockchainStore.address) && 
         <OpiumLink theme={ETheme.DARK} newTab={true} label={address} href={getScanLink(address, authStore.networkId)} />
       }

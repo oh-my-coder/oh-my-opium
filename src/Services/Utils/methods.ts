@@ -1,9 +1,16 @@
-import { createStakingContractInstance, createTokenContractInstance, createOpiumIERC20PositionContractInstance } from './contract'
+import { 
+  createStakingContractInstance,
+  createTokenContractInstance,
+  createOpiumIERC20PositionContractInstance,
+  createWrapperContractInstance,
+  createTokenManagerContractInstance
+} from './contract'
 import { convertFromBN, convertToBN } from './bn'
 import { sendTx } from './transaction'
 import { PoolType, PositionType } from './types'
 import { getPhase } from './phases'
 import { convertDateFromTimestamp } from './date'
+import { wrapperProducts } from '../DataBase/opium'
 
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
@@ -12,12 +19,13 @@ export const makeApprove = async (
   poolAddress: string, 
   userAddress: string, 
   onConfirm: () => void, 
-  onError: (error: Error) => void
+  onError: (error: Error) => void,
+  marginAddress?: string
 ): Promise<string> => {
 
   // Create contracts instances 
   const stakingContract = createStakingContractInstance(poolAddress)
-  const tokenAddress =  await stakingContract?.methods.underlying().call()
+  const tokenAddress =  marginAddress || await stakingContract?.methods.underlying().call()
   const tokenContract = createTokenContractInstance(tokenAddress)
 
   // Make allowance 
@@ -63,26 +71,48 @@ export const checkStakedBalance = async (
   }
 }
 
+export const getAllowance = async (tokenAddress: string, userAddress: string, poolAddress: string) => {
+  const tokenContract = createTokenContractInstance(tokenAddress)
+
+  const allowance = await tokenContract?.methods.allowance(userAddress, poolAddress).call()
+  return allowance
+}
+
 
 export const checkAllowance = async (
   value: number,
   poolAddress: string, 
-  userAddress: string, 
+  userAddress: string,
 ) => {
 
   // Create contracts instances 
   const stakingContract = createStakingContractInstance(poolAddress)
   const tokenAddress = await stakingContract?.methods.underlying().call({from: userAddress})
-  const tokenContract = createTokenContractInstance(tokenAddress)
 
   // Check allowance
-  const allowance = await tokenContract?.methods.allowance(userAddress, poolAddress).call().then((allowance: string) => {
+  const allowance = await getAllowance(tokenAddress, userAddress, poolAddress).then((allowance: string) => {
     return stakingContract?.methods.decimals().call().then((decimals: string) => {
       return +convertFromBN(allowance, +decimals)
     })
   })
   return allowance > value 
 }
+
+export const checkWrapperAllowance = async (
+  value: number,
+  poolAddress: string, 
+  userAddress: string,
+  marginAddress: string,
+  decimals: number
+) => {
+
+  // Check allowance
+  const allowance = await getAllowance(marginAddress, userAddress, poolAddress).then((allowance: string) => {
+      return +convertFromBN(allowance, decimals)
+  })
+  return allowance > value 
+}
+
 
 
 export const stakeIntoPool = async (
@@ -246,19 +276,56 @@ export const getPoolPhase = async (poolAddress: string) => {
 }
 
 export const checkPhase = async (poolAddress: string, currentPhase: string) => {
-  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'NOT INITIALIZED') {
+  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'WAITING') {
     return {
       isStaking: currentPhase === 'REBALANCING',
       isTrading:  currentPhase === 'TRADING',
-      isNotInitialized: currentPhase === 'NOT INITIALIZED'
+      isNotInitialized: currentPhase === 'WAITING'
     }
   }
   const phases = await getPoolPhase(poolAddress)
   return {
     isStaking: phases.currentPhaseText === 'REBALANCING',
     isTrading:  phases.currentPhaseText === 'TRADING',
-    isNotInitialized: phases.currentPhaseText === 'NOT INITIALIZED'
+    isNotInitialized: phases.currentPhaseText === 'WAITING'
   }
+}
 
+export const wrapToWopium = async (
+  value: number,
+  userAddress: string,
+  onConfirm: () => void, 
+  onError: (error: Error) => void
+) => {
+  const wrapperContract = createWrapperContractInstance(wrapperProducts.wopium.poolAddress)
+  const valueBN = convertToBN(value, wrapperProducts.wopium.decimals)
+  const tx = wrapperContract?.methods.wrap(valueBN).send({from: userAddress})
+
+  return await sendTx(tx, onConfirm, onError)
+}
+
+export const unwrapToOpium = async (
+  value: number,
+  userAddress: string,
+  onConfirm: () => void, 
+  onError: (error: Error) => void
+) => {
+  const wrapperContract = createWrapperContractInstance(wrapperProducts.opium.poolAddress)
+  const valueBN = convertToBN(value, wrapperProducts.opium.decimals)
+  const tx = wrapperContract?.methods.unwrap(valueBN).send({from: userAddress})
+
+  return await sendTx(tx, onConfirm, onError)
+}
+
+export const getOpiumBalance = async(marginAddress: string, userAddress: string, decimals: number) => {
+  const tokenContract = createTokenContractInstance(marginAddress)
+  const balanceBN = await tokenContract?.methods.balanceOf(userAddress).call()
+  return +convertFromBN(balanceBN, decimals)
+}
+
+export const getWopiumBalance = async(tokenMangerAddress: string, userAddress: string, decimals: number) => {
+  const tokenManagerContract = createTokenManagerContractInstance(tokenMangerAddress)
+  const balanceBN = await tokenManagerContract?.methods.spendableBalanceOf(userAddress).call()
+  return +convertFromBN(balanceBN, decimals)
 }
 

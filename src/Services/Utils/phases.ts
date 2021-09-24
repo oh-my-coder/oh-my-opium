@@ -12,7 +12,7 @@ export const getPhase = (epochLength: number, stakingPhaseLength: number, tradin
   const isStaking = (stakingStart < now) && (stakingEnd > now)
   const isNotInitialized = !isStaking && !isTrading
 
-  const currentPhaseText = isTrading ? 'TRADING' : isStaking ? 'REBALANCING' : 'NOT INITIALIZED'
+  const currentPhaseText = isTrading ? 'TRADING' : isStaking ? 'REBALANCING' : 'WAITING'
 
 
   
