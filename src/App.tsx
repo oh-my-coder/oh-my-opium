@@ -2,7 +2,7 @@ import './App.css';
 import Header from './Components/Header'
 import PoolsList from './Components/PoolsList'
 import { positions, Provider as AlertProvider } from 'react-alert'
-
+import { BrowserView, MobileView } from "react-device-detect"
 const options = {
   timeout: 5000,
   position: positions.TOP_LEFT,
@@ -22,7 +22,8 @@ const AlertTemplate = ({options, message, close }:any) => (
     width: '20rem', 
     height: '4rem', 
     backgroundColor: (options.type === 'error' ? '#F6029C' : '#2ECD94'), 
-    color: '#0A0A1E'
+    color: '#0A0A1E',
+    padding: '1rem'
   }}>
     {message}
   </div>
@@ -32,8 +33,13 @@ function App() {
   return (
     <AlertProvider template={AlertTemplate} {...options}>
       <div className="App">
-        <Header />
-        <PoolsList />
+        <MobileView >
+          <div className='mobile-text'>Oh My Opium does not support mobile devices yet. <br/><br/> Please use desktop version.</div>
+        </MobileView>
+        <BrowserView>
+          <Header />
+          <PoolsList />
+        </BrowserView>
       </div>
     </AlertProvider>
   );

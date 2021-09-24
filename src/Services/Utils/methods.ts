@@ -2,6 +2,8 @@ import { createStakingContractInstance, createTokenContractInstance, createOpium
 import { convertFromBN, convertToBN } from './bn'
 import { sendTx } from './transaction'
 import { PoolType, PositionType } from './types'
+import { getPhase } from './phases'
+import { convertDateFromTimestamp } from './date'
 
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
@@ -21,6 +23,44 @@ export const makeApprove = async (
   // Make allowance 
   const tx = tokenContract?.methods.approve(poolAddress, MAX_UINT256).send({ from: userAddress })
   return await sendTx(tx, onConfirm, onError)
+}
+
+
+export const checkTokenBalance = async (
+  poolAddress: string,
+  userAddress: string,
+  value: number
+) => {
+  try {
+    const stakingContract = createStakingContractInstance(poolAddress)
+    const decimals = await stakingContract?.methods.decimals().call()
+    const tokenAddress =  await stakingContract?.methods.underlying().call()
+    const tokenContract = createTokenContractInstance(tokenAddress)
+    const balanceBN = await tokenContract?.methods.balanceOf(userAddress).call()
+    const balance = +convertFromBN(balanceBN, decimals)
+    return value > balance
+  } catch (e) {
+    console.log(e)
+    return true
+  }
+}
+
+export const checkStakedBalance = async (
+  poolAddress: string,
+  userAddress: string,
+  value: number
+) => {
+  try {
+    const stakingContract = createStakingContractInstance(poolAddress)
+    const shares = await stakingContract?.methods.balanceOf(userAddress).call()
+    const balanceBN = await stakingContract?.methods.calculateSharesToUnderlyingRatio(shares).call()
+    const decimals = await stakingContract?.methods.decimals().call()
+    const balance = +convertFromBN(balanceBN, +decimals)
+    return value > balance
+  } catch (e) {
+    console.log(e)
+    return true
+  }
 }
 
 
@@ -97,7 +137,6 @@ export const buyProduct = async (
   // Calculate metadata
   const decimals = await stakingContract?.methods.decimals().call()
   const quantity = Math.floor(value/nominal)
-  console.log({quantity})
 
   // Calculate premium
   let premiumBN
@@ -107,7 +146,6 @@ export const buyProduct = async (
     return onInsufficientLiquidity()
   }
   const premium = +convertFromBN(premiumBN, decimals)
-  console.log({premium})
 
   // Send tx
   const tx = stakingContract?.methods.hedge(
@@ -169,7 +207,7 @@ export const withdrawPosition = async (
   return await sendTx(tx, onConfirm, onError)
 }
 
-export const getStakedBalance = async (poolAddress: string, userAddress: string): Promise<number | string> => {
+export const getStakedBalance = async (poolAddress: string, userAddress: string): Promise<string> => {
   try {
     const contract = createStakingContractInstance(poolAddress)
     const tokenAddress = await contract?.methods.underlying().call({from: userAddress})
@@ -188,3 +226,39 @@ export const getStakedBalance = async (poolAddress: string, userAddress: string)
     return 'Unable to fetch balance'
   }
 }
+
+
+export const getPoolPhase = async (poolAddress: string) => {
+  const stakingContract = createStakingContractInstance(poolAddress)
+  const {endTime} = await stakingContract?.methods.derivative().call()
+  const epochLength = await stakingContract?.methods.EPOCH().call()
+  const stakingPhaseLength = await stakingContract?.methods.STAKING_PHASE().call()
+  const tradingPhaseLength = await stakingContract?.methods.TRADING_PHASE().call()
+
+  const phaseInfo = getPhase(+epochLength, +stakingPhaseLength, +tradingPhaseLength, +endTime)
+
+  return {
+    currentPhaseText: phaseInfo.currentPhaseText,
+    stakingPhase: `${convertDateFromTimestamp(phaseInfo.stakingStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.stakingEnd, 'DD.MM.YYYY HH:mm')}`,
+    tradingPhase: `${convertDateFromTimestamp(phaseInfo.tradingStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.tradingEnd, 'DD.MM.YYYY HH:mm')}`,
+    notInitialized: `${convertDateFromTimestamp(phaseInfo.notInitializedStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.notInitializedEnd, 'DD.MM.YYYY HH:mm')}`,
+  }
+}
+
+export const checkPhase = async (poolAddress: string, currentPhase: string) => {
+  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'NOT INITIALIZED') {
+    return {
+      isStaking: currentPhase === 'REBALANCING',
+      isTrading:  currentPhase === 'TRADING',
+      isNotInitialized: currentPhase === 'NOT INITIALIZED'
+    }
+  }
+  const phases = await getPoolPhase(poolAddress)
+  return {
+    isStaking: phases.currentPhaseText === 'REBALANCING',
+    isTrading:  phases.currentPhaseText === 'TRADING',
+    isNotInitialized: phases.currentPhaseText === 'NOT INITIALIZED'
+  }
+
+}
+

@@ -14,3 +14,9 @@ export const sendTx = (
     reject(e)
   }
 })
+
+export const getScanLink = (address: string, networkId: number) => {
+  if (networkId === 1) return `https://etherscan.io/address/${address}`
+  if (networkId === 56 ) return `https://bscscan.com/address/${address}`
+  if (networkId === 137 ) return `https://polygonscan.com/address/${address}`
+}
