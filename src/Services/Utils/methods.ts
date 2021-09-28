@@ -169,14 +169,9 @@ export const buyProduct = async (
   const decimals = await stakingContract?.methods.decimals().call()
   const quantity = Math.floor(value/nominal)
 
-  // Calculate premium
-  let premiumBN
-  try {
-    premiumBN = await stakingContract?.methods.getRequiredPremium(quantity).call()
-  } catch {
-    return onInsufficientLiquidity()
-  }
-  const premium = +convertFromBN(premiumBN, decimals)
+  const premium = await getPremium(value, pool)
+
+  if (!premium) return onInsufficientLiquidity()
 
   // Send tx
   const tx = stakingContract?.methods.hedge(
@@ -185,6 +180,42 @@ export const buyProduct = async (
   return await sendTx(tx, onConfirm, onError)
 }
 
+
+export const getPremium = async (
+  value: number,
+  pool: PoolType,
+) => {
+  const { poolAddress, nominal } = pool
+  let premium
+  const stakingContract = createStakingContractInstance(poolAddress)
+
+  const quantity = Math.floor(value / nominal)
+  const { availableQuantity } = await stakingContract?.methods.getAvailableQuantity().call()
+
+  if (quantity > +availableQuantity) {
+    return premium
+  }
+
+  const decimals = await stakingContract?.methods.decimals().call()
+  const premiumBN = await stakingContract?.methods.getRequiredPremium(quantity).call()
+  premium = +convertFromBN(premiumBN, decimals)
+  return premium
+}
+
+export const getInsurancePrice = async(
+  value: number,
+  pool: PoolType
+) => {
+
+  const { nominal } = pool
+
+  const premium = await getPremium(value, pool)
+  if (!premium) return 0
+
+  const quantity = Math.floor(value / nominal)
+
+  return quantity * premium
+}
 
 
 export const getPurchasedProducts = async (

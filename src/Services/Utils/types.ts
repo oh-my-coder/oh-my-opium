@@ -3,6 +3,7 @@ export type PoolType = {
   title: string,
   nominal: number,
   isSuspended: boolean,
+  marginTitle: string,
   oracle?: {
     address: string,
     type: OracleTypeEnum

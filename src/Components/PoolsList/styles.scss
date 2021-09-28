@@ -132,8 +132,8 @@
         outline: none;
         box-shadow: none;
         border: none;
-
         transition: border-color .25s ease;
+
 
         &:focus {
             background-color: transparent;
@@ -151,6 +151,11 @@
         &::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+
+        /* Firefox */
+        &[type=number] {
+          -moz-appearance: textfield;
         }
       }
     }

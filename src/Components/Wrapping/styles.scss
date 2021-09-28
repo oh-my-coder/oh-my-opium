@@ -49,6 +49,11 @@
           -webkit-appearance: none;
           margin: 0;
       }
+
+      /* Firefox */
+      &[type=number] {
+        -moz-appearance: textfield;
+      }
     }
   }
 }
