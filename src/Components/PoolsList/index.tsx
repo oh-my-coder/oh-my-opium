@@ -4,11 +4,12 @@ import { useAlert } from 'react-alert'
 import { ETheme, Popup } from '@opiumteam/react-opium-components'
 import appStore from '../../Services/Stores/AppStore'
 import authStore from '../../Services/Stores/AuthStore'
-import {  getPurchasedProducts } from '../../Services/Utils/methods'
+import {  getPurchasedProducts, isPoolMaintainable } from '../../Services/Utils/methods'
 import { PoolType, PositionType } from '../../Services/Utils/types'
 import PositionsList from '../PositionsList'
 import PoolListItem from './poolListItem'
 import Wrapping from '../Wrapping'
+import Maintenance from '../Maintenance'
 
 import './styles.scss'
 
@@ -16,6 +17,9 @@ const PoolsList: FC<{}> = () => {
   const [ popupIsOpened, setPopupIsOpened ] = useState(false) 
   const [ positions, setPositions ] = useState<PositionType[]>([])
   const [ positionProductTitle, setPositionProductTitle ] = useState<string>('')
+  
+  const [ maintenanceIsOpened, setMaintenanceIsOpened ] = useState(false) 
+  const [ poolToMaintain, setPoolToMaintain ] = useState<PoolType | null>(null) 
   const alert = useAlert()
 
   const userAddress = authStore.blockchainStore.address
@@ -35,6 +39,29 @@ const PoolsList: FC<{}> = () => {
     setPopupIsOpened(false)
       setPositionProductTitle('')
       setPositions([])
+  }
+
+
+  const showMaintenance = async (pool: PoolType) => {
+    if (!pool.oracle || pool.isSuspended) {
+      alert.error('This pool is unmaintainable') 
+      return
+    }
+
+    const isMaintainable = await isPoolMaintainable(pool.poolAddress)
+
+    if (!isMaintainable) {
+      alert.error('Current epoch has not finished yet') 
+      return
+    }
+
+    setPoolToMaintain(pool)
+    setMaintenanceIsOpened(true)
+  }
+
+  const closeMaintenance = () => {
+    setPoolToMaintain(null)
+    setMaintenanceIsOpened(false)
   }
   
   return (
@@ -60,8 +87,18 @@ const PoolsList: FC<{}> = () => {
         component={<Wrapping />}
       />
 
+      <Popup
+        theme={ETheme.DARK}
+        titleSize='lg'
+        title='Maintenance'
+        className='positions-list-popup'
+        popupIsOpen={maintenanceIsOpened}
+        closePopup={closeMaintenance}
+        component={<Maintenance pool={poolToMaintain}/>}
+      />
+
       {appStore.poolsByNetwork.map((pool) => {
-        return <PoolListItem pool={pool} showPurchasedProducts={() => showPurchasedProducts(pool)} key={pool.poolAddress}/>
+        return <PoolListItem pool={pool} showPurchasedProducts={() => showPurchasedProducts(pool)} showMaintenance={() => showMaintenance(pool)} key={pool.poolAddress}/>
       })}
     </div>
   )

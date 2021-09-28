@@ -20,11 +20,12 @@ import './styles.scss'
 type Props = {
   pool: PoolType
   showPurchasedProducts: Function
+  showMaintenance: Function
 }
 
 const PoolsList: FC<Props> = (props: Props) => {
 
-  const { pool, showPurchasedProducts } = props
+  const { pool, showPurchasedProducts, showMaintenance } = props
 
   const [ stakeValue, setStakeValue ] = useState(0) 
   const [ protectValue, setProtectValue ] = useState(0) 
@@ -167,11 +168,19 @@ const PoolsList: FC<Props> = (props: Props) => {
       </div>
 
       <div className='pools-list-item-fourth-column'>
+        <div>
           <div>Load pool's data: </div>
           <div className='pools-list-item-fourth-column-buttons-wrapper'>
             <Button variant='secondary' className='blue' label='staked balance' onClick={loadBalance} disabled={appStore.requestsAreNotAllowed}/>
             <Button variant='secondary' className='blue' label='phases' onClick={loadPhase} disabled={appStore.requestsAreNotAllowed}/>
           </div>
+        </div>
+        <div>
+          <div>Maintenance: </div>
+          <div className='pools-list-item-fourth-column-buttons-wrapper'>
+            <Button variant='secondary' className='blue' label='open' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
+          </div>
+        </div>
       </div>
     </div>
   )

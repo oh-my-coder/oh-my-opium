@@ -3,7 +3,8 @@ import {
   createTokenContractInstance,
   createOpiumIERC20PositionContractInstance,
   createWrapperContractInstance,
-  createTokenManagerContractInstance
+  createTokenManagerContractInstance,
+  createOracleWithCallbackContractInstance
 } from './contract'
 import { convertFromBN, convertToBN } from './bn'
 import { sendTx } from './transaction'
@@ -317,15 +318,86 @@ export const unwrapToOpium = async (
   return await sendTx(tx, onConfirm, onError)
 }
 
-export const getOpiumBalance = async(marginAddress: string, userAddress: string, decimals: number) => {
+export const getOpiumBalance = async (marginAddress: string, userAddress: string, decimals: number) => {
   const tokenContract = createTokenContractInstance(marginAddress)
   const balanceBN = await tokenContract?.methods.balanceOf(userAddress).call()
   return +convertFromBN(balanceBN, decimals)
 }
 
-export const getWopiumBalance = async(tokenMangerAddress: string, userAddress: string, decimals: number) => {
+export const getWopiumBalance = async (tokenMangerAddress: string, userAddress: string, decimals: number) => {
   const tokenManagerContract = createTokenManagerContractInstance(tokenMangerAddress)
   const balanceBN = await tokenManagerContract?.methods.spendableBalanceOf(userAddress).call()
   return +convertFromBN(balanceBN, decimals)
 }
 
+export const callOracle = async (
+  oracleAddress: string, 
+  poolAddress: string,
+  userAddress: string,
+  onConfirm: () => void, 
+  onError: (error: Error) => void
+) => {
+  const oracleContract = createOracleWithCallbackContractInstance(oracleAddress)
+  const stakingContract = createStakingContractInstance(poolAddress)
+
+  const derivative = await stakingContract?.methods.derivative().call()
+  const { endTime } = derivative
+  const tx = oracleContract?.methods._callback(+endTime).send({ from: userAddress })
+
+  return await sendTx(tx, onConfirm, onError)
+}
+
+
+export const executeLong = async (
+  poolAddress: string,
+  userAddress: string,
+  onConfirm: () => void, 
+  onError: (error: Error) => void
+) => {
+  const stakingContract = createStakingContractInstance(poolAddress)
+  const longPositionWrapper = await stakingContract?.methods.longPositionWrapper().call()
+  const longPositionTokenContract = createOpiumIERC20PositionContractInstance(longPositionWrapper)
+
+  const derivative = await stakingContract?.methods.derivative().call()
+
+  let derivativeParams = ['950000000000000000', '2500']
+  try {
+    derivativeParams = await stakingContract?.methods.getDerivativeParams().call()
+  } catch (e) {}
+  
+  const { margin, endTime, oracleId, token, syntheticId } = derivative
+  
+  const executeArgs = {
+    margin,
+    endTime,
+    oracleId,
+    token,
+    syntheticId,
+    params: derivativeParams,
+  }
+
+  const tx = longPositionTokenContract?.methods.execute(executeArgs).send({ from: userAddress })
+
+  return await sendTx(tx, onConfirm, onError)
+}
+
+export const initializeEpoch = async (
+  poolAddress: string,
+  userAddress: string,
+  onConfirm: () => void, 
+  onError: (error: Error) => void
+) => {
+  const stakingContract = createStakingContractInstance(poolAddress)
+  const tx = stakingContract?.methods.initializeEpoch().send({ from: userAddress })
+
+  return await sendTx(tx, onConfirm, onError)
+  
+}
+
+export const isPoolMaintainable = async (poolAddress: string) => {
+  const stakingContract = createStakingContractInstance(poolAddress)
+  const derivative = await stakingContract?.methods.derivative().call()
+  const { endTime } = derivative
+  const now = Number((Date.now() / 1000).toFixed())
+  return now > +endTime
+}
