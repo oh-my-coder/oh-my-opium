@@ -25,7 +25,7 @@ const PoolsList: FC<{}> = () => {
   const userAddress = authStore.blockchainStore.address
 
   const showPurchasedProducts = async (pool: PoolType) => {
-    const positions = await getPurchasedProducts(pool.poolAddress, userAddress, (e) => alert.error(e.message))
+    const positions = await getPurchasedProducts(pool, userAddress, (e) => alert.error(e.message))
     if (positions && positions.length) {
       setPopupIsOpened(true)
       setPositions(positions)

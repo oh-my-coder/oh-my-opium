@@ -4,16 +4,21 @@ export type PoolType = {
   nominal: number,
   isSuspended: boolean,
   marginTitle: string,
+  positions?: DBPositionsType[]
   oracle?: {
     address: string,
     type: OracleTypeEnum
   }
 }
 
+export type DBPositionsType = {
+  address: string,
+  endTime: number
+}
+
 export type PositionType = {
   balance: number,
   address: string,
-  blockNumber: number,
   endTime: number
 }
 

@@ -41,6 +41,7 @@ const PoolsList: FC<Props> = (props: Props) => {
     }
   )
   const [ phaseInfoIsLoading, setPhaseInfoIsLoading ] = useState(false)
+  const [ positionsLoading, setPositionsLoading ] = useState(false)
 
   const { requiredNetworkName } = authStore.blockchainStore
 
@@ -151,6 +152,12 @@ const PoolsList: FC<Props> = (props: Props) => {
     setPhaseInfo(phases)
     setPhaseInfoIsLoading(false)
   }
+
+  const checkProducts = async () => {
+    setPositionsLoading(true)
+    await showPurchasedProducts()
+    setPositionsLoading(false)
+  }
   
   return (
     <div className='pools-list-item-wrapper' key={pool.title}>
@@ -185,7 +192,7 @@ const PoolsList: FC<Props> = (props: Props) => {
         </div>
         <div className='pools-list-item-purchase'>
           <div>Purchased products: </div>
-          <Button  size="sm" variant='secondary' className='blue' label='check' onClick={showPurchasedProducts} disabled={appStore.requestsAreNotAllowed || (requiredNetworkName === 'Binance Smart Chain') || (requiredNetworkName === 'Polygon Network')}/>
+          <Button  size="sm" variant='secondary' className='blue' label={positionsLoading ? 'loading ...' : 'check'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
         </div>
       </div>
 

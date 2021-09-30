@@ -1,5 +1,23 @@
 import { OracleTypeEnum } from '../Utils/types'
 
+// ETH positions
+import {positions as opiumOptionCall} from './positions/eth/opiumOptionCall'
+import {positions as usdtProtection} from './positions/eth/usdtProtection'
+
+// BSC positions
+import {positions as turboETH} from './positions/bsc/turboETH'
+
+// Polygon positions
+import {positions as ETHDumpProtection} from './positions/polygon/ETHDumpProtection'
+import {positions as realt10700Whittier} from './positions/polygon/realt10700Whittier'
+import {positions as realt402Kostner} from './positions/polygon/realt402Kostner'
+import {positions as turboAAVE} from './positions/polygon/turboAAVE'
+import {positions as turboBTC} from './positions/polygon/turboBTC'
+import {positions as turboDailyETH} from './positions/polygon/turboDailyETH'
+import {positions as turboWeeklyETH} from './positions/polygon/turboWeeklyETH'
+import {positions as turboMATIC} from './positions/polygon/turboMATIC'
+
+
 export const ethPools = [
   {
     title: 'USDT Protection',
@@ -7,6 +25,7 @@ export const ethPools = [
     nominal: 1,
     isSuspended: false,
     marginTitle: 'USDC',
+    positions: usdtProtection,
     oracle: {
       address: '0x89c9c6731817ce9d3f52dc96e1481086bc1b328c',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -18,6 +37,7 @@ export const ethPools = [
     nominal: 1,
     isSuspended: false,
     marginTitle: 'OPIUM',
+    positions: opiumOptionCall,
     oracle: {
       address: '0x64dcb00e36a6238dad28e59c71c5214500539ef7',
       type: OracleTypeEnum.OPTIMISTIC
@@ -81,6 +101,7 @@ export const bscPools = [
     nominal: 0.001,
     isSuspended: false,
     marginTitle: 'ETH',
+    positions: turboETH,
     oracle: {
       address: '0xf5D690c9D61092112660FEAf62e542a670Fa886D',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -95,6 +116,7 @@ export const polygonPools = [
     nominal: 1,
     isSuspended: false,
     marginTitle: 'USDC',
+    positions: realt10700Whittier,
     oracle: {
       address: '0x8E6CAF617718c5Ee21c2d583FAbEbecFb52cbd9c',
       type: OracleTypeEnum.OPTIMISTIC
@@ -106,6 +128,7 @@ export const polygonPools = [
     nominal: 1,
     isSuspended: false,
     marginTitle: 'USDC',
+    positions: realt402Kostner,
     oracle: {
       address: '0x335d0bc9311d6c4b5dce51dbff1eb2bbf04ce8da',
       type: OracleTypeEnum.OPTIMISTIC
@@ -117,6 +140,7 @@ export const polygonPools = [
     nominal: 1,
     isSuspended: false,
     marginTitle: 'USDC',
+    positions: ETHDumpProtection,
     oracle: {
       address: '0x0D876632F321fdcAbC540eEA5867c4799A627ed8',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -128,6 +152,7 @@ export const polygonPools = [
     nominal: 0.01,
     isSuspended: false,
     marginTitle: 'WETH',
+    positions: turboWeeklyETH,
     oracle: {
       address: '0x0D876632F321fdcAbC540eEA5867c4799A627ed8',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -139,6 +164,7 @@ export const polygonPools = [
     nominal: 0.001,
     isSuspended: false,
     marginTitle: 'WBTC',
+    positions: turboBTC,
     oracle: {
       address: '0xf5cb774e890edf3979bf9ae7a1c098ee89429ce5',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -150,6 +176,7 @@ export const polygonPools = [
     nominal: 10,
     isSuspended: false,
     marginTitle: 'WMATIC',
+    positions: turboMATIC,
     oracle: {
       address: '0x2e9ac4d0882165dce317f23925060ca3551782a9',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -161,6 +188,7 @@ export const polygonPools = [
     nominal: 0.001,
     isSuspended: false,
     marginTitle: 'amAAVE',
+    positions: turboAAVE,
     oracle: {
       address: '0xbE457663218C3527A82d4021b1DCE5802997063b',
       type: OracleTypeEnum.WITH_TIMESTAMP
@@ -172,6 +200,7 @@ export const polygonPools = [
     nominal: 0.001,
     isSuspended: false,
     marginTitle: 'WETH',
+    positions: turboDailyETH,
     oracle: {
       address: '0x0D876632F321fdcAbC540eEA5867c4799A627ed8',
       type: OracleTypeEnum.WITH_TIMESTAMP

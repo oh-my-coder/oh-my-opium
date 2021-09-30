@@ -5,7 +5,7 @@ const networkIds = {
 }
 
 
-const rpc = {
+const rpc: { [x: number] : { [x: number] : string} } = {
   1: {
     1: 'https://cloudflare-eth.com/'
   },
@@ -13,7 +13,7 @@ const rpc = {
     56: 'https://bsc-dataseed.binance.org/'
   },
   137: {
-    137: 'https://matic-mainnet-full-rpc.bwarelabs.com/'
+    137: 'https://polygon-rpc.com/'
   }
   
 }

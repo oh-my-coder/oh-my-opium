@@ -1,12 +1,13 @@
-import { observable, action } from 'mobx'
+import { observable, action, computed } from 'mobx'
 import { BlockchainStore } from '@opiumteam/mobx-web3/lib/Classes/Blockchain.store'
 import { Blockchain } from '@opiumteam/mobx-web3'
+import Web3 from 'web3'
 import config from '../Config'
 
 // Utils
 export class AuthStore {
   @observable public loggedIn = false
-  @observable public networkId = 1
+  @observable public networkId: number = 1
   @observable public blockchainStore: BlockchainStore
   @observable public blockchain: Blockchain
   
@@ -50,6 +51,14 @@ export class AuthStore {
   private _finalizeLogin = () => {
     this.loggedIn = true
   }
+
+  @computed
+  get readOnlyWeb3() {
+    const networkId = this.networkId
+    const provider = new Web3.providers.HttpProvider(config.rpc[networkId][networkId])
+    return new Web3(provider)
+  }
+
 }
 
 export default new AuthStore()

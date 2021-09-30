@@ -1,5 +1,6 @@
 import { 
   createStakingContractInstance,
+  createReadOnlyStakingContractInstance,
   createTokenContractInstance,
   createOpiumIERC20PositionContractInstance,
   createWrapperContractInstance,
@@ -11,8 +12,9 @@ import { sendTx } from './transaction'
 import { PoolType, PositionType } from './types'
 import { getPhase } from './phases'
 import { convertDateFromTimestamp } from './date'
+import { lastBlockByNetwork } from './constants'
 import { wrapperProducts } from '../DataBase/opium'
-
+import authStore from '../Stores/AuthStore'
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
 
@@ -217,40 +219,76 @@ export const getInsurancePrice = async(
   return quantity * premium
 }
 
-
 export const getPurchasedProducts = async (
-  poolAddress: string,
+  pool: PoolType,
   userAddress: string,
   onError: (error: any) => void,
   ) => {
+
+  const { poolAddress, positions: dbPositions} = pool
   const decimals = 18
+  const web3 = authStore.blockchain.getWeb3()
+  if (!web3) return
 
   // Create contracts instance
+  const stakingContractReadOnly = createReadOnlyStakingContractInstance(poolAddress)
   const stakingContract = createStakingContractInstance(poolAddress)
 
-  // Retrieve events and get balance
-  try {
-    return stakingContract?.getPastEvents('LongPositionWrapper', {fromBlock: 0, toBlock: 'latest'}).then(async (events) => {
-      const balances: { balance: string, address: string, blockNumber: number}[] = await Promise.all(events.map(async (event) => {
-        const wrapperContract = createTokenContractInstance(event.returnValues.wrapper)
-        const balance = await wrapperContract?.methods.balanceOf(userAddress).call()
-        return { balance, address: event.returnValues.wrapper, blockNumber: event.blockNumber}
-      }))
-
-      // Remove zero balance and convert from BigNumber
-      const modifiedBalances: { balance: number, address: string, blockNumber: number}[] = balances.filter(el => +el.balance).map(el => ({ ...el, balance: +convertFromBN(el.balance, decimals)}))
   
-      // Get endTime
-      const finalizedBalances: PositionType[] = await Promise.all(modifiedBalances.map(async (el) => {
-        const der = await stakingContract?.methods.derivative().call(undefined, el.blockNumber+1)
-        return {...el, endTime: der.endTime}
-      }))
-      return finalizedBalances
-    })
-  } catch (error) {
-    console.log({error})
-    onError(error)
+  const positions: PositionType[] = []
+
+  // Get positions from DB
+  if (dbPositions) {
+    for (let pos of dbPositions) {
+      const { endTime, address } = pos
+      const wrapperContract = createTokenContractInstance(address)
+      const balance = await wrapperContract?.methods.balanceOf(userAddress).call()
+      if (balance !== '0') {
+        const modifiedBalance: PositionType = { balance: +convertFromBN(balance, decimals), address, endTime}
+        positions.push(modifiedBalance)
+      }
+    }
   }
+
+  // Prepare batches to get events from chain
+  const blocksInBatch = 50000
+  const latestBlock = await web3.eth.getBlockNumber()
+  let fromBlock = lastBlockByNetwork[authStore.networkId]
+  let toBlock = fromBlock + blocksInBatch 
+  const batchAmount = Math.ceil((latestBlock - fromBlock) / blocksInBatch)
+
+  for (let i of Array(batchAmount)) {
+    try {
+      // Waiting time between requests
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Get events
+      await stakingContract?.getPastEvents('LongPositionWrapper', {fromBlock, toBlock}).then(async (events) => {
+        const balances: { balance: string, address: string, blockNumber: number}[] = await Promise.all(events.map(async (event) => {
+          const wrapperContract = createTokenContractInstance(event.returnValues.wrapper)
+          const balance = await wrapperContract?.methods.balanceOf(userAddress).call()
+          return { balance, address: event.returnValues.wrapper, blockNumber: event.blockNumber}
+        }))
+
+        // Remove zero balance and convert from BigNumber
+        const modifiedBalances: { balance: number, address: string, blockNumber: number}[] = balances.filter(el => +el.balance).map(el => ({ ...el, balance: +convertFromBN(el.balance, decimals)}))
+    
+        // Get endTime
+        const finalizedBalances: PositionType[] = await Promise.all(modifiedBalances.map(async (el) => {
+          const der = await stakingContractReadOnly?.methods.derivative().call(undefined, el.blockNumber+1)
+          return {...el, endTime: der.endTime}
+        }))
+        positions.push(...finalizedBalances)
+      })
+    } catch (error) {
+      console.log({error})
+      onError(error)
+    }
+    fromBlock = fromBlock + blocksInBatch
+    toBlock = toBlock + blocksInBatch
+  }
+  
+  return positions
 }
 
 export const withdrawPosition = async (
