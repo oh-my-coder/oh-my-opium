@@ -102,16 +102,16 @@
     }
 
     .pools-list-item-fourth-column {
-      width: 20%;
+      width: 22%;
       font-size: 12px;
       height: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-evenly;
 
       .pools-list-item-fourth-column-buttons-wrapper {
-        padding-top: 1rem;
         & > * {
+          margin-top: .5rem;
           margin-right: 1rem;
           margin-bottom: 1rem;
         }
@@ -139,8 +139,8 @@
         outline: none;
         box-shadow: none;
         border: none;
-
         transition: border-color .25s ease;
+
 
         &:focus {
             background-color: transparent;
@@ -158,6 +158,11 @@
         &::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+
+        /* Firefox */
+        &[type=number] {
+          -moz-appearance: textfield;
         }
       }
     }

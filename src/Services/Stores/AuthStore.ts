@@ -1,6 +1,7 @@
-import { observable, action } from 'mobx'
+import { observable, action, computed } from 'mobx'
 import { BlockchainStore } from '@opiumteam/mobx-web3/lib/Classes/Blockchain.store'
 import { Blockchain } from '@opiumteam/mobx-web3'
+import Web3 from 'web3'
 import config from '../Config'
 
 // Utils
@@ -13,7 +14,7 @@ export class AuthStore {
 
   constructor() {
     // @ts-ignore
-    this.blockchain = new Blockchain(this.networkId, 'Ethereum', 'https://cloudflare-eth.com/', '', 'wss://cloudflare-eth.com/', console, '')
+    this.blockchain = new Blockchain(this.networkId, 'Polygon', 'https://cloudflare-eth.com/', '', 'wss://cloudflare-eth.com/', console, '')
     // @ts-ignore
     this.blockchainStore = new BlockchainStore(this.blockchain, console)
     this.blockchainStore.registerCallbacks(this._finalizeLogin, this._finalizeLogin, this._finalizeLogout, this._walletChangeCallback)
@@ -50,6 +51,14 @@ export class AuthStore {
   private _finalizeLogin = () => {
     this.loggedIn = true
   }
+
+  @computed
+  get readOnlyWeb3() {
+    const networkId = this.networkId
+    const provider = new Web3.providers.HttpProvider(config.rpc[networkId][networkId])
+    return new Web3(provider)
+  }
+
 }
 
 export default new AuthStore()

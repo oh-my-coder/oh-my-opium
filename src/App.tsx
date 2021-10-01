@@ -1,8 +1,9 @@
+import { positions, Provider as AlertProvider } from 'react-alert'
+import { BrowserView, MobileView } from "react-device-detect"
+
 import './App.css';
 import Header from './Components/Header'
 import PoolsList from './Components/PoolsList'
-import { positions, Provider as AlertProvider } from 'react-alert'
-import { BrowserView, MobileView } from "react-device-detect"
 const options = {
   timeout: 5000,
   position: positions.TOP_LEFT,

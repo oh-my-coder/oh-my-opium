@@ -1,0 +1,97 @@
+export const positions = [{
+  address: "0xe2d1c007fcf2c1d3d8b37612548715bcdb379636",
+  endTime: 1625212800
+}, {
+  address: "0x51dcfcf12ca1577ec6e3c4c2a77b6483a4b94738",
+  endTime: 1625472000
+}, {
+  address: "0x886b2e49f0d850272f83042dabf072c256bf32d4",
+  endTime: 1625731200
+}, {
+  address: "0xd916086f359b54d72ec2267413a3e0b55475f4f8",
+  endTime: 1625990400
+}, {
+  address: "0x16872e63d53ae8f4d16df70c1ebca69288ef7b02",
+  endTime: 1626249600
+}, {
+  address: "0xc485a75d1708503e6263d1aee5858592de8579b8",
+  endTime: 1626508800
+}, {
+  address: "0xe7d33fd96afe1ac4a3b8b679b7007ed18ba97c2b",
+  endTime: 1626768000
+}, {
+  address: "0xbe4e1554e629bee2b4712f407267c9def66336e0",
+  endTime: 1627027200
+}, {
+  address: "0x039b907cd17cba8dd5aafeaed91670e83c356d13",
+  endTime: 1627286400
+}, {
+  address: "0x5f85971561c3402f71160141469271d2e9cd0654",
+  endTime: 1627545600
+}, {
+  address: "0xa3c156320c2dab41a94834258aba943bf735d312",
+  endTime: 1627804800
+}, {
+  address: "0xef93d00053e20a68e4bf7501c8310c488c460a0f",
+  endTime: 1628064000
+}, {
+  address: "0x6ead5b8d7466662b2b11363a04847da8e147845c",
+  endTime: 1628323200
+}, {
+  address: "0xd3d7ac5012769616236ef36a97e6c9e2c9bf4903",
+  endTime: 1628582400
+}, {
+  address: "0x0509464e3d0fc7c42e4143b7ad7952c49d3d9c8b",
+  endTime: 1628841600
+}, {
+  address: "0x979204351281e1001bb47a8e52585aac3c2572bf",
+  endTime: 1629100800
+}, {
+  address: "0x1cc2c76dff49f2760a21171c057e650603e1c742",
+  endTime: 1629360000
+}, {
+  address: "0x5a1f54304dc0e8c2da89fb1af73b99cb31da12f7",
+  endTime: 1629619200
+}, {
+  address: "0x363996bb5e5fa481d8a4139d2c2dd22059d33974",
+  endTime: 1629878400
+}, {
+  address: "0xa8b3edbb66cced254e6a4961d879370e0d26d344",
+  endTime: 1630137600
+}, {
+  address: "0xffdc68ca718d830cafc4dc8a0695031c329f4591",
+  endTime: 1630396800
+}, {
+  address: "0xd801b91ef7677068790880fec9ffeccc0df57e35",
+  endTime: 1630656000
+}, {
+  address: "0x443e951025563a55be5a8c25544424825e45fdc4",
+  endTime: 1630915200
+}, {
+  address: "0x13d6d384ce18174eea0587a6c3f6550d05cd2853",
+  endTime: 1631174400
+}, {
+  address: "0x7dcf7bd086c896f6b43b25fe1a43302eace97c2e",
+  endTime: 1631433600
+}, {
+  address: "0x082c3cac02f8ccb8b76d242342be93b45e59eaaf",
+  endTime: 1631692800
+}, {
+  address: "0x13b235978222f0db26466a682b1dd64d97279811",
+  endTime: 1631952000
+}, {
+  address: "0x0cde28558b89cc4dc70f857ef5564198b8fc4a52",
+  endTime: 1632211200
+}, {
+  address: "0xbbf31fb6e619aecc6ce9e0ca79ee60b7d14a816d",
+  endTime: 1632470400
+}, {
+  address: "0xfaee758afa5f767bc35ee6d0834cb8f4a5a4cee9",
+  endTime: 1632729600
+}, {
+  address: "0x268b9781541ee26b77e842b0d733b51c122ab511",
+  endTime: 1632988800
+}, {
+  address: "0xf362268989eead9b3af2bf522cd77876ba9df8f4",
+  endTime: 1633248000
+}]

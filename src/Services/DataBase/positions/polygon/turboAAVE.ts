@@ -1,0 +1,70 @@
+export const positions = [{
+  address: "0x2fa0d8fb76a6e79648174244c9179da959a5db54",
+  endTime: 1620028800
+}, {
+  address: "0xf5bb03534a41b8a5a4467bddf82c2256feea3280",
+  endTime: 1620633600
+}, {
+  address: "0x6b780c9c290e7eb2de8f2f4204132484911d3a44",
+  endTime: 1621238400
+}, {
+  address: "0xd4019e4c28bf1637cbe61d507690c7505b410cee",
+  endTime: 1621843200
+}, {
+  address: "0x9c6b7c6361c1b8a60e4355af7942e341be65a03b",
+  endTime: 1622448000
+}, {
+  address: "0x8f26156d48a344ef23a0b475118c767bd531e44e",
+  endTime: 1623052800
+}, {
+  address: "0xf0f510fe98fe0bdc4a26e1029fc55b48c8c65422",
+  endTime: 1623657600
+}, {
+  address: "0x2c95a6d9da2af42c83326d0487c7bf801dd04e0e",
+  endTime: 1624262400
+}, {
+  address: "0xad631115f4851398909ce1350e825cc5ee4db056",
+  endTime: 1624867200
+}, {
+  address: "0x1c5ada82d3c1bfadb7e9f709955e05bc6365b1aa",
+  endTime: 1625472000
+}, {
+  address: "0x3e05a0ae8567ed5563d3f1adce623bf3a13ae348",
+  endTime: 1626076800
+}, {
+  address: "0x3f08e48825da25877b7cc21f357cf70a14934b49",
+  endTime: 1626681600
+}, {
+  address: "0xe51562f63a6002007b3f8b1ec5d87e2521de9d23",
+  endTime: 1627286400
+}, {
+  address: "0xf81dbc263cc2c73fc4ec253827b1cc16616a3982",
+  endTime: 1627891200
+}, {
+  address: "0xfa05a0269de2b625e6fb696d601eb4061501fe22",
+  endTime: 1628496000
+}, {
+  address: "0x53b71350b11c68f057ccf727e10c3e92adcf9e2e",
+  endTime: 1629100800
+}, {
+  address: "0x745bfba495ea2110ace29b120e1606364094c8c8",
+  endTime: 1629705600
+}, {
+  address: "0xa347d312b2c8d7773c0c78da4d3a8aa46a073f73",
+  endTime: 1630310400
+}, {
+  address: "0x8af7d125fc4250d7fd1d5e1b9f4d6087002dd8e2",
+  endTime: 1630915200
+}, {
+  address: "0x91517e222e72cebc9d2fe4fa326c899ebd79ad48",
+  endTime: 1631520000
+}, {
+  address: "0x1ffc2ce655fc58074d7bb277c3f52610b8727538",
+  endTime: 1632124800
+}, {
+  address: "0xee88a077236e445e7e49a98a06eed38df3b932f4",
+  endTime: 1632729600
+}, {
+  address: "0x591cfcb49294988107126e0c0d341a903d1a3646",
+  endTime: 1633334400
+}]
