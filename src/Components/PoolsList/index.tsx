@@ -8,7 +8,6 @@ import {  getPurchasedProducts, isPoolMaintainable } from '../../Services/Utils/
 import { PoolType, PositionType } from '../../Services/Utils/types'
 import PositionsList from '../PositionsList'
 import PoolListItem from './poolListItem'
-import Wrapping from '../Wrapping'
 import Maintenance from '../Maintenance'
 
 import './styles.scss'
@@ -78,17 +77,7 @@ const PoolsList: FC<{}> = () => {
       />
 
       <Popup
-        theme={ETheme.DARK}
-        titleSize='lg'
-        title='Wrapping'
-        className='positions-list-popup'
-        popupIsOpen={appStore.wrappingPopupIsOpened}
-        closePopup={() => appStore.setWrappingPopupIsOpened(false)}
-        component={<Wrapping />}
-      />
-
-      <Popup
-        theme={ETheme.DARK}
+        theme={ETheme.LIGHT}
         titleSize='lg'
         title='Maintenance'
         className='positions-list-popup'

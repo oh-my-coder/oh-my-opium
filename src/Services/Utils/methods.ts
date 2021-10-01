@@ -3,8 +3,6 @@ import {
   createReadOnlyStakingContractInstance,
   createTokenContractInstance,
   createOpiumIERC20PositionContractInstance,
-  createWrapperContractInstance,
-  createTokenManagerContractInstance,
   createOracleWithCallbackContractInstance
 } from './contract'
 import { convertFromBN, convertToBN } from './bn'
@@ -13,7 +11,6 @@ import { PoolType, PositionType } from './types'
 import { getPhase } from './phases'
 import { convertDateFromTimestamp } from './date'
 import { lastBlockByNetwork } from './constants'
-import { wrapperProducts } from '../DataBase/opium'
 import authStore from '../Stores/AuthStore'
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
@@ -100,23 +97,6 @@ export const checkAllowance = async (
   })
   return allowance > value 
 }
-
-export const checkWrapperAllowance = async (
-  value: number,
-  poolAddress: string, 
-  userAddress: string,
-  marginAddress: string,
-  decimals: number
-) => {
-
-  // Check allowance
-  const allowance = await getAllowance(marginAddress, userAddress, poolAddress).then((allowance: string) => {
-      return +convertFromBN(allowance, decimals)
-  })
-  return allowance > value 
-}
-
-
 
 export const stakeIntoPool = async (
   value: number,
@@ -359,44 +339,6 @@ export const checkPhase = async (poolAddress: string, currentPhase: string) => {
     isTrading:  phases.currentPhaseText === 'TRADING',
     isNotInitialized: phases.currentPhaseText === 'WAITING'
   }
-}
-
-export const wrapToWopium = async (
-  value: number,
-  userAddress: string,
-  onConfirm: () => void, 
-  onError: (error: Error) => void
-) => {
-  const wrapperContract = createWrapperContractInstance(wrapperProducts.wopium.poolAddress)
-  const valueBN = convertToBN(value, wrapperProducts.wopium.decimals)
-  const tx = wrapperContract?.methods.wrap(valueBN).send({from: userAddress})
-
-  return await sendTx(tx, onConfirm, onError)
-}
-
-export const unwrapToOpium = async (
-  value: number,
-  userAddress: string,
-  onConfirm: () => void, 
-  onError: (error: Error) => void
-) => {
-  const wrapperContract = createWrapperContractInstance(wrapperProducts.opium.poolAddress)
-  const valueBN = convertToBN(value, wrapperProducts.opium.decimals)
-  const tx = wrapperContract?.methods.unwrap(valueBN).send({from: userAddress})
-
-  return await sendTx(tx, onConfirm, onError)
-}
-
-export const getOpiumBalance = async (marginAddress: string, userAddress: string, decimals: number) => {
-  const tokenContract = createTokenContractInstance(marginAddress)
-  const balanceBN = await tokenContract?.methods.balanceOf(userAddress).call()
-  return +convertFromBN(balanceBN, decimals)
-}
-
-export const getWopiumBalance = async (tokenMangerAddress: string, userAddress: string, decimals: number) => {
-  const tokenManagerContract = createTokenManagerContractInstance(tokenMangerAddress)
-  const balanceBN = await tokenManagerContract?.methods.spendableBalanceOf(userAddress).call()
-  return +convertFromBN(balanceBN, decimals)
 }
 
 export const callOracle = async (

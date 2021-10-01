@@ -37,7 +37,7 @@ const PositionsList: FC<Props> = (props: Props) => {
             <div>Insured amount: <br/>{position.balance}</div>
             <div className={`${isExpired ? 'red-date' : 'green-date'}`}>{isExpired ? `Expired at ${date}` : `Will expire at ${date}`}</div>
             <div>
-              <Button variant='secondary' label='withdraw' onClick={() => makeWithdrawal(position)} disabled={appStore.requestsAreNotAllowed  || !isExpired}/>
+              <Button theme={ETheme.LIGHT} variant='secondary' label='withdraw' onClick={() => makeWithdrawal(position)} disabled={appStore.requestsAreNotAllowed  || !isExpired}/>
             </div>
           </div>
         )

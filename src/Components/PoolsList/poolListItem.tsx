@@ -182,11 +182,11 @@ const PoolsList: FC<Props> = (props: Props) => {
         <div className='pools-list-item-input'>Amount ({pool.marginTitle}): <input type='number' onChange={e => setProtectValue(+e.target.value)} /></div>
         <div className='pools-list-item-insurance-price'>{`You pay: ${insPrice === 0 ? 'N/A' : `${parseFloat(insPrice.toFixed(3))} ${pool.marginTitle}`}`}</div>
         <div className='pools-list-item-third-column-buttons-wrapper'>
-          <Button variant='secondary' label='buy product' className='green' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+          <Button theme={ETheme.LIGHT} variant='secondary' label='buy product' className='green' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
         </div>
         <div className='pools-list-item-purchase'>
           <div>Purchased products: </div>
-          <Button  size="sm" variant='secondary' className='blue' label={positionsLoading ? 'loading ...' : 'check'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
+          <Button  theme={ETheme.LIGHT} size="sm" variant='secondary' className='blue' label={positionsLoading ? 'loading ...' : 'check'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
         </div>
       </div>
 
@@ -201,7 +201,7 @@ const PoolsList: FC<Props> = (props: Props) => {
         <div>
           <div>Maintenance: </div>
           <div className='pools-list-item-fourth-column-buttons-wrapper'>
-            <Button variant='secondary' className='blue' label='open' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
+            <Button theme={ETheme.LIGHT} variant='secondary' className='blue' label='open' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
           </div>
         </div>
       </div>
