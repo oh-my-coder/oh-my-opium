@@ -314,30 +314,38 @@ export const getPoolPhase = async (poolAddress: string) => {
   const epochLength = await stakingContract?.methods.EPOCH().call()
   const stakingPhaseLength = await stakingContract?.methods.STAKING_PHASE().call()
   const tradingPhaseLength = await stakingContract?.methods.TRADING_PHASE().call()
-
-  const phaseInfo = getPhase(+epochLength, +stakingPhaseLength, +tradingPhaseLength, +endTime)
+  let idleStakingTimeLimit = 0
+  try {
+    idleStakingTimeLimit = await stakingContract?.methods.idleStakingTimeLimit().call()
+  } catch {
+    idleStakingTimeLimit = +epochLength - +stakingPhaseLength - +tradingPhaseLength
+  }
+  const phaseInfo = getPhase(+epochLength, +stakingPhaseLength, +tradingPhaseLength, +endTime, +idleStakingTimeLimit)
 
   return {
     currentPhaseText: phaseInfo.currentPhaseText,
     stakingPhase: `${convertDateFromTimestamp(phaseInfo.stakingStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.stakingEnd, 'DD.MM.YYYY HH:mm')}`,
     tradingPhase: `${convertDateFromTimestamp(phaseInfo.tradingStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.tradingEnd, 'DD.MM.YYYY HH:mm')}`,
     notInitialized: `${convertDateFromTimestamp(phaseInfo.notInitializedStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.notInitializedEnd, 'DD.MM.YYYY HH:mm')}`,
+    stakingOnly: phaseInfo.stakingOnlyStart === phaseInfo.stakingOnlyEnd ? '' : `${convertDateFromTimestamp(phaseInfo.stakingOnlyStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.stakingOnlyEnd, 'DD.MM.YYYY HH:mm')}`,
   }
 }
 
 export const checkPhase = async (poolAddress: string, currentPhase: string) => {
-  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'WAITING') {
+  if (currentPhase === 'REBALANCING' || currentPhase === 'TRADING' || currentPhase === 'WAITING' || currentPhase === 'STAKING (ONLY)') {
     return {
       isStaking: currentPhase === 'REBALANCING',
       isTrading:  currentPhase === 'TRADING',
-      isNotInitialized: currentPhase === 'WAITING'
+      isNotInitialized: currentPhase === 'WAITING',
+      isStakingOnly: currentPhase === 'STAKING (ONLY)'
     }
   }
   const phases = await getPoolPhase(poolAddress)
   return {
     isStaking: phases.currentPhaseText === 'REBALANCING',
     isTrading:  phases.currentPhaseText === 'TRADING',
-    isNotInitialized: phases.currentPhaseText === 'WAITING'
+    isNotInitialized: phases.currentPhaseText === 'WAITING',
+    isStakingOnly: phases.currentPhaseText === 'STAKING (ONLY)'
   }
 }
 
