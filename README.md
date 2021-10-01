@@ -4,9 +4,8 @@ oh-my-opium is an open-source community maintained decentralized derivative inte
 <br>
 
 # Where to find
-Last version is deployed on [ipfs](https://cloudflare-ipfs.com/ipfs/QmcK92xMCz5DqvFyU5fCjkdcGaK9zq9xZnmLEVuJ95dXox/).
+RealT-only [version](https://cloudflare-ipfs.com/ipfs/QmdTkJ9y3G4NBBJ8MYsAjeAKkBrwqMVq6jzLgp5eJAQKDY/).
 This version also includes maintenance (call oracle, initialized epoch) functionality
-RealT-only [version](https://cloudflare-ipfs.com/ipfs/QmU9uDYnqwEmrUKbqQifvJDLzU4MeRCVvcppymt8Z7qNXv/).
 
 
 <br>
