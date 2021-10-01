@@ -24,7 +24,7 @@ const Maintenance: FC<Props> = (props: Props) => {
     if (!pool || !pool.oracle) return
     
     if (pool.oracle.type === OracleTypeEnum.OPTIMISTIC) {
-      window.open('https://google.com')
+      window.open('https://oracles.opium.network/')
       return
     }
 
