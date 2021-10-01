@@ -32,12 +32,13 @@ const PoolsList: FC<Props> = (props: Props) => {
   const [ insPrice, setInsPrice ] = useState(0) 
   const [ balance, setBalance ] = useState('Load to see') 
   const [ balanceIsLoading, setBalanceIsLoading ] = useState(false)
-  const [ phaseInfo, setPhaseInfo ] = useState<{currentPhaseText: string, stakingPhase: string ,tradingPhase: string, notInitialized: string}>(
+  const [ phaseInfo, setPhaseInfo ] = useState<{currentPhaseText: string, stakingPhase: string ,tradingPhase: string, notInitialized: string, stakingOnly: string}>(
     {
       currentPhaseText: 'Load to see',
       stakingPhase: 'Load to see',
       tradingPhase: 'Load to see',
-      notInitialized: 'Load to see'
+      notInitialized: 'Load to see',
+      stakingOnly: ''
     }
   )
   const [ phaseInfoIsLoading, setPhaseInfoIsLoading ] = useState(false)
@@ -50,7 +51,8 @@ const PoolsList: FC<Props> = (props: Props) => {
       currentPhaseText: 'Load to see',
       stakingPhase: 'Load to see',
       tradingPhase: 'Load to see',
-      notInitialized: 'Load to see'
+      notInitialized: 'Load to see',
+      stakingOnly: ''
     })
       setBalance('Load to see')
   }, [requiredNetworkName])
@@ -71,8 +73,8 @@ const PoolsList: FC<Props> = (props: Props) => {
   const userAddress = authStore.blockchainStore.address
 
   const makeStake = async () => {
-    const { isStaking } = await checkPhase(pool.poolAddress, phaseInfo.currentPhaseText)
-    if (!isStaking) {
+    const { isStaking, isStakingOnly } = await checkPhase(pool.poolAddress, phaseInfo.currentPhaseText)
+    if (!isStaking && !isStakingOnly) {
       alert.error('Stakings is available only during rebalancing phase')
       return
     }
@@ -98,9 +100,9 @@ const PoolsList: FC<Props> = (props: Props) => {
 
   const makeHedging = async () => {
 
-    const { isTrading } = await checkPhase(pool.poolAddress, phaseInfo.currentPhaseText)
-    if (!isTrading) {
-      alert.error('Purchasing is available only during trading phase')
+    const { isTrading, isStaking } = await checkPhase(pool.poolAddress, phaseInfo.currentPhaseText)
+    if (!isTrading && !isStaking) {
+      alert.error('Purchasing is available only during trading or rebalancing phases')
       return
     }
 
@@ -168,6 +170,7 @@ const PoolsList: FC<Props> = (props: Props) => {
           <div className='pools-list-item-phase'>Current phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.currentPhaseText}</div>
           <div className='pools-list-item-phase'>Rebalancing phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingPhase}</div>
           <div className='pools-list-item-phase'>Trading phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.tradingPhase}</div>
+          {phaseInfo.stakingOnly && <div className='pools-list-item-phase'>Staking (only) phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingOnly}</div>}
           <div className='pools-list-item-phase'>Waiting phase: {phaseInfoIsLoading ? 'Loading...' : phaseInfo.notInitialized}</div>
         </div>}
       </div>
