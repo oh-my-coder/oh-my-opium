@@ -179,7 +179,7 @@ const PoolsList: FC<Props> = (props: Props) => {
           <div className='pools-list-item-header-title'>{pool.title}</div>
           <div className='pools-list-item-header-address'><OpiumLink theme={ETheme.DARK} newTab={true} label={pool.poolAddress} href={getScanLink(pool.poolAddress, authStore.networkId)} /></div>
         </div>
-        <Button variant='secondary' className='blue' label={collapseIsOpened ? 'close' : 'open'} onClick={() => changeCollapseStatus(!collapseIsOpened)} />
+        <Button theme={ETheme.LIGHT} variant='secondary' className='blue' label={collapseIsOpened ? 'close' : 'open'} onClick={() => changeCollapseStatus(!collapseIsOpened)} />
       </div>
     )
   }
@@ -200,8 +200,8 @@ const PoolsList: FC<Props> = (props: Props) => {
         <div className='pools-list-item-second-column'>
           <div className='pools-list-item-input'>Amount to stake ({pool.marginTitle}): <input type='number' onChange={e => setStakeValue(+e.target.value)} /></div>
           <div className='pools-list-item-second-column-buttons-wrapper'>
-            <Button variant='primary' label='stake' onClick={makeStake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
-            <Button variant='secondary' label='unstake' onClick={makeUnstake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+            <Button theme={ETheme.LIGHT} variant='primary' label='stake' onClick={makeStake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+            <Button theme={ETheme.LIGHT} variant='secondary' label='unstake' onClick={makeUnstake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
           </div>
           <div className='pools-list-item-balance'>
             <div>Staked balance: </div>
@@ -214,15 +214,15 @@ const PoolsList: FC<Props> = (props: Props) => {
           <div className='pools-list-item-input'>Amount ({pool.marginTitle}): <input type='number' onChange={e => setProtectValue(+e.target.value)} /></div>
           <div className='pools-list-item-insurance-price'>{`You pay: ${insPrice === 0 ? 'N/A' : `${parseFloat(insPrice.toFixed(3))} ${pool.marginTitle}`}`}</div>
           <div className='pools-list-item-third-column-buttons-wrapper'>
-            <Button variant='primary' label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+            <Button theme={ETheme.LIGHT} variant='primary' label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
           </div>
           <div className='pools-list-item-purchase'>
             <div>Purchased products: </div>
-            <Button  size="sm" variant='secondary' className='blue' label={positionsLoading ? 'loading ...' : 'check'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
+            <Button  theme={ETheme.LIGHT} size="sm" variant='secondary' className='blue' label={positionsLoading ? 'loading ...' : 'check'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
           </div>
         </div>
 
-        <Button variant='secondary' label='open maintenance' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
+        <Button theme={ETheme.LIGHT} variant='secondary' label='open maintenance' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
       </div>
     )
   } 

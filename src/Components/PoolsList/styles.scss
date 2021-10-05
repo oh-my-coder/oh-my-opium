@@ -6,7 +6,8 @@
 
 .CollapseContainer {
   width: 90%;
-
+  border: 2px solid #0A0A1E;
+  border-radius: 10px;
   &__container {
     overflow: hidden;
   }
@@ -22,9 +23,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(78, 62, 122, 0.2);
+  background-color: white;
   height: 7rem;
   padding: 0 5rem;
+  color: #0A0A1E;
 
 
   .pools-list-item-header-info {
@@ -43,7 +45,7 @@
       a {
         font-size: 14px;
         font-weight: bold;
-        color: white;
+        color: #0A0A1E;
       }
     }
   }
@@ -55,9 +57,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(78, 62, 122, 0.2);
+  background-color: white;
   height: 13rem;
   padding: 0 5rem;
+  color: #0A0A1E;
 
   .pools-list-item-first-column {
     width: 30%;
@@ -157,8 +160,8 @@
           background-color: transparent !important;
           border: 0;
       }
-      color: white;
-      border-bottom: 1px solid rgba(white, .3) !important;
+      color: #0A0A1E;
+      border-bottom: 1px solid rgba(#0A0A1E, .3) !important;
 
 
       &::-webkit-outer-spin-button,
@@ -180,5 +183,5 @@
   flex-direction: column;
   align-items: center;
   font-size: 13px;
-  background-color: #0A0A1E;
+  background-color: white;
 }
