@@ -9,10 +9,12 @@ import {
   makeApprove, unstakeFromPool, 
   buyProduct, checkTokenBalance, 
   checkStakedBalance, getPoolPhase, 
-  getStakedBalance, checkPhase, getInsurancePrice
+  getStakedBalance, checkPhase, getInsurancePrice,
+  isPoolMaintainable
 } from '../../Services/Utils/methods'
 import { PoolType } from '../../Services/Utils/types'
 import { getScanLink } from '../../Services/Utils/transaction'
+import Arrow from './arrow'
 
 import './styles.scss'
 
@@ -42,14 +44,17 @@ const PoolsList: FC<Props> = (props: Props) => {
     }
   )
   const [ phaseInfoIsLoading, setPhaseInfoIsLoading ] = useState(false)
+  const [ isMaintainable, setIsMaintainable ] = useState(false)
   const [ positionsLoading, setPositionsLoading ] = useState(false)
 
   const [collapseIsOpened, setCollapseIsOpened] = useState(false)
 
   const changeCollapseStatus = async (status: boolean) => {
-    if (status) {
+    if (status && !appStore.requestsAreNotAllowed) {
       loadBalance()
       loadPhase()
+      const maintainable = await isPoolMaintainable(pool.poolAddress)
+      setIsMaintainable(maintainable)
     }
     setCollapseIsOpened(status)
   }
@@ -179,7 +184,9 @@ const PoolsList: FC<Props> = (props: Props) => {
           <div className='pools-list-item-header-title'>{pool.title}</div>
           <div className='pools-list-item-header-address'><OpiumLink theme={ETheme.DARK} newTab={true} label={pool.poolAddress} href={getScanLink(pool.poolAddress, authStore.networkId)} /></div>
         </div>
-        <Button theme={ETheme.LIGHT} variant='secondary' className='blue' label={collapseIsOpened ? 'close' : 'open'} onClick={() => changeCollapseStatus(!collapseIsOpened)} />
+        <div className={`arrow-button ${collapseIsOpened ? 'up' : ''}`}>
+          <Arrow />
+        </div>
       </div>
     )
   }
@@ -188,13 +195,21 @@ const PoolsList: FC<Props> = (props: Props) => {
     return (
       <div className='pools-list-item-body-wrapper'>
         <div className='pools-list-item-first-column'>
-          {pool.isSuspended ? <div>Pool is suspended</div> : <div className='pools-list-item-phase-wrapper'>
-            <div className='pools-list-item-phase'>Current phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.currentPhaseText}</div>
-              <div className='pools-list-item-phase'>Rebalancing phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingPhase}</div>
-              <div className='pools-list-item-phase'>Trading phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.tradingPhase}</div>
-              {phaseInfo.stakingOnly && <div className='pools-list-item-phase'>Staking (only) phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingOnly}</div>}
-              <div className='pools-list-item-phase'>Waiting phase: {appStore.requestsAreNotAllowed ? 'Please check your network'  : phaseInfoIsLoading ? 'Loading...' : phaseInfo.notInitialized}</div>
-            </div>}
+          {pool.isSuspended
+            ? <div>Pool is suspended</div>  
+            : isMaintainable 
+              ? <div>
+                  <div className='pool-list-item-no-epoch'>Epoch is not initialized</div>
+                  <Button variant='secondary' className='blue' size='sm' label='open maintenance' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
+                </div>
+              : <div className='pools-list-item-phase-wrapper'>
+                  <div className='pools-list-item-phase'>Current phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.currentPhaseText}</div>
+                  <div className='pools-list-item-phase'>Rebalancing phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingPhase}</div>
+                  <div className='pools-list-item-phase'>Trading phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.tradingPhase}</div>
+                  {phaseInfo.stakingOnly && <div className='pools-list-item-phase'>Staking (only) phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingOnly}</div>}
+                  <div className='pools-list-item-phase'>Waiting phase: {appStore.requestsAreNotAllowed ? 'Please check your network'  : phaseInfoIsLoading ? 'Loading...' : phaseInfo.notInitialized}</div>
+                </div>
+          }
         </div>
 
         <div className='pools-list-item-second-column'>
@@ -216,13 +231,11 @@ const PoolsList: FC<Props> = (props: Props) => {
           <div className='pools-list-item-third-column-buttons-wrapper'>
             <Button theme={ETheme.LIGHT} variant='primary' label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
           </div>
-          <div className='pools-list-item-purchase'>
-            <div>Purchased products: </div>
-            <Button  theme={ETheme.LIGHT} size="sm" variant='secondary' className='blue' label={positionsLoading ? 'loading ...' : 'check'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
-          </div>
         </div>
 
-        <Button theme={ETheme.LIGHT} variant='secondary' label='open maintenance' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
+          <div className='pools-list-item-fourth-column'>
+            <Button theme={ETheme.LIGHT} variant='secondary' label={positionsLoading ? 'loading ...' : 'show purchased products'} onClick={checkProducts} disabled={appStore.requestsAreNotAllowed || positionsLoading}/>
+          </div>
       </div>
     )
   } 

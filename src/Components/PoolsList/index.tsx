@@ -4,7 +4,7 @@ import { useAlert } from 'react-alert'
 import { ETheme, Popup } from '@opiumteam/react-opium-components'
 import appStore from '../../Services/Stores/AppStore'
 import authStore from '../../Services/Stores/AuthStore'
-import {  getPurchasedProducts, isPoolMaintainable } from '../../Services/Utils/methods'
+import {  getPurchasedProducts, isPoolMaintainable, getPurchasedProductsTheGraph } from '../../Services/Utils/methods'
 import { PoolType, PositionType } from '../../Services/Utils/types'
 import PositionsList from '../PositionsList'
 import PoolListItem from './poolListItem'
@@ -24,7 +24,14 @@ const PoolsList: FC<{}> = () => {
   const userAddress = authStore.blockchainStore.address
 
   const showPurchasedProducts = async (pool: PoolType) => {
-    const positions = await getPurchasedProducts(pool, userAddress, (e) => alert.error(e.message))
+    let positions:  PositionType[] | undefined = []
+
+    await getPurchasedProductsTheGraph(pool, userAddress)
+      .then(res => positions = res)
+      .catch(async e => {
+        await getPurchasedProducts(pool, userAddress, (e) => alert.error(e.message)).then(res => positions = res)
+      })
+
     if (positions && positions.length) {
       setPopupIsOpened(true)
       setPositions(positions)

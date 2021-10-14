@@ -9,3 +9,11 @@ export const lastBlockByNetwork: {[x: number] : number} = {
   56: lastBlockBSC,
   137: lastBlockPolygon
 }
+
+export const graphEndpoint = 'https://api.thegraph.com/subgraphs/name/opiumprotocol'
+
+export const subgraphs: {[x: number] : string}  = {
+  1: 'staking-long-positions-tracker',
+  56: 'bsc-ofi-long-pos-track',
+  137: 'ofi-long-positions-tracker-matic',
+}
