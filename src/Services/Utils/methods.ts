@@ -8,11 +8,11 @@ import {
   createOracleWithCallbackContractInstance
 } from './contract'
 import { convertFromBN, convertToBN } from './bn'
-import { sendTx } from './transaction'
+import { sendTx, fetchTheGraph } from './transaction'
 import { PoolType, PositionType } from './types'
 import { getPhase } from './phases'
 import { convertDateFromTimestamp } from './date'
-import { lastBlockByNetwork } from './constants'
+import { lastBlockByNetwork, subgraphs} from './constants'
 import { wrapperProducts } from '../DataBase/opium'
 import authStore from '../Stores/AuthStore'
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
@@ -291,6 +291,43 @@ export const getPurchasedProducts = async (
   return positions
 }
 
+export const getPurchasedProductsTheGraph = async (
+  pool: PoolType,
+  userAddress: string,
+) => {
+  const positions: PositionType[] = []
+  const decimals = 18
+
+  const { poolAddress } = pool
+  try {
+        const response = await fetchTheGraph(subgraphs[authStore.networkId], `
+        {
+          longPositionTokens(where: { stakingContractAddress: "${poolAddress.toLowerCase()}" }) {
+            id
+            longPositionAddress
+            endTime
+            stakingContractAddress
+          }
+        }
+      `)
+      const eventPositions: [{endTime: string, longPositionAddress: string}]  = response.longPositionTokens
+      const balances: { balance: string, address: string, endTime: number }[] = await Promise.all(eventPositions.map(async (event) => {
+        const wrapperContract = createTokenContractInstance(event.longPositionAddress)
+        const balance = await wrapperContract?.methods.balanceOf(userAddress).call()
+        return { balance, address: event.longPositionAddress, endTime: +event.endTime}
+      }))
+  
+      // Remove zero balance and convert from BigNumber
+      const modifiedBalances: { balance: number, address: string, endTime: number}[] = balances.filter(el => +el.balance).map(el => ({ ...el, balance: +convertFromBN(el.balance, decimals)}))
+  
+      positions.push(...modifiedBalances)
+    } catch (error) {
+      console.log({error})
+      throw error
+    }
+    return positions
+}
+
 export const withdrawPosition = async (
   position: PositionType, 
   userAddress: string, 
@@ -342,12 +379,14 @@ export const getPoolPhase = async (poolAddress: string) => {
   }
   const phaseInfo = getPhase(+epochLength, +stakingPhaseLength, +tradingPhaseLength, +endTime, +idleStakingTimeLimit)
 
+  const format = 'DD MMM HH:mm'
+
   return {
     currentPhaseText: phaseInfo.currentPhaseText,
-    stakingPhase: `${convertDateFromTimestamp(phaseInfo.stakingStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.stakingEnd, 'DD.MM.YYYY HH:mm')}`,
-    tradingPhase: `${convertDateFromTimestamp(phaseInfo.tradingStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.tradingEnd, 'DD.MM.YYYY HH:mm')}`,
-    notInitialized: `${convertDateFromTimestamp(phaseInfo.notInitializedStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.notInitializedEnd, 'DD.MM.YYYY HH:mm')}`,
-    stakingOnly: phaseInfo.stakingOnlyStart === phaseInfo.stakingOnlyEnd ? '' : `${convertDateFromTimestamp(phaseInfo.stakingOnlyStart, 'DD.MM.YYYY HH:mm')} - ${convertDateFromTimestamp(phaseInfo.stakingOnlyEnd, 'DD.MM.YYYY HH:mm')}`,
+    stakingPhase: `${convertDateFromTimestamp(phaseInfo.stakingStart, format)} - ${convertDateFromTimestamp(phaseInfo.stakingEnd, format)}`,
+    tradingPhase: `${convertDateFromTimestamp(phaseInfo.tradingStart, format)} - ${convertDateFromTimestamp(phaseInfo.tradingEnd, format)}`,
+    notInitialized: `${convertDateFromTimestamp(phaseInfo.notInitializedStart, format)} - ${convertDateFromTimestamp(phaseInfo.notInitializedEnd, format)}`,
+    stakingOnly: phaseInfo.stakingOnlyStart === phaseInfo.stakingOnlyEnd ? '' : `${convertDateFromTimestamp(phaseInfo.stakingOnlyStart, format)} - ${convertDateFromTimestamp(phaseInfo.stakingOnlyEnd, format)}`,
   }
 }
 
