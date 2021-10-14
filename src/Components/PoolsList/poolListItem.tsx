@@ -182,7 +182,7 @@ const PoolsList: FC<Props> = (props: Props) => {
       <div className='pools-list-item-header-wrapper'>
         <div className='pools-list-item-header-info'>
           <div className='pools-list-item-header-title'>{pool.title}</div>
-          <div className='pools-list-item-header-address'><OpiumLink theme={ETheme.DARK} newTab={true} label={pool.poolAddress} href={getScanLink(pool.poolAddress, authStore.networkId)} /></div>
+          <div className='pools-list-item-header-address'><OpiumLink theme={ETheme.LIGHT} newTab={true} label={pool.poolAddress} href={getScanLink(pool.poolAddress, authStore.networkId)} /></div>
         </div>
         <div className={`arrow-button ${collapseIsOpened ? 'up' : ''}`}>
           <Arrow />
