@@ -215,7 +215,7 @@ const PoolsList: FC<Props> = (props: Props) => {
         <div className='pools-list-item-second-column'>
           <div className='pools-list-item-input'>Amount to stake ({pool.marginTitle}): <input type='number' onChange={e => setStakeValue(+e.target.value)} /></div>
           <div className='pools-list-item-second-column-buttons-wrapper'>
-            <Button theme={ETheme.LIGHT} variant='primary' label='stake' onClick={makeStake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+            <Button theme={ETheme.LIGHT} variant={(appStore.requestsAreNotAllowed || pool.isSuspended ) ? 'secondary' : 'primary'} label='stake' onClick={makeStake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
             <Button theme={ETheme.LIGHT} variant='secondary' label='unstake' onClick={makeUnstake} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
           </div>
           <div className='pools-list-item-balance'>
@@ -229,7 +229,7 @@ const PoolsList: FC<Props> = (props: Props) => {
           <div className='pools-list-item-input'>Amount ({pool.marginTitle}): <input type='number' onChange={e => setProtectValue(+e.target.value)} /></div>
           <div className='pools-list-item-insurance-price'>{`You pay: ${insPrice === 0 ? 'N/A' : `${parseFloat(insPrice.toFixed(3))} ${pool.marginTitle}`}`}</div>
           <div className='pools-list-item-third-column-buttons-wrapper'>
-            <Button theme={ETheme.LIGHT} variant='primary' label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
+            <Button theme={ETheme.LIGHT} variant={(appStore.requestsAreNotAllowed || pool.isSuspended ) ? 'secondary' : 'primary'} label='buy product' onClick={makeHedging} disabled={appStore.requestsAreNotAllowed || pool.isSuspended}/>
           </div>
         </div>
 
