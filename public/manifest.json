@@ -21,5 +21,8 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "iconPath": "logo512.png",
+  "description": "Community version of Opium Finance",
+  "providedBy": {"name": "Community", "url": "https://github.com/oh-my-coder/oh-my-opium"}
 }
