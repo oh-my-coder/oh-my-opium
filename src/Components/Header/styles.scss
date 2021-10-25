@@ -8,10 +8,16 @@
   justify-content: space-between;
   background-color: white;
 
-  .header-title {
-    font-size: 20px;
-    color: #0A0A1E;
+  .header-left {
+    & > * {
+      margin-right: 25px;
+    }
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
+
   
   .header-buttons-wrapper {
     display: flex;
@@ -22,6 +28,7 @@
     }
     a {
       color: #0A0A1E;
+      font-size: 13px;
     }
   }
 
@@ -33,5 +40,11 @@
 
   .red-network {
     color: #F6029C;
+    padding-left: 20px;
   }
+}
+
+#dropdown-selector-toggle {
+  border: none !important;
+  background-color: transparent !important;
 }

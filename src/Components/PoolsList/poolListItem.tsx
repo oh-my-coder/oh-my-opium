@@ -203,11 +203,11 @@ const PoolsList: FC<Props> = (props: Props) => {
                   <Button variant='secondary' className='blue' size='sm' label='open maintenance' onClick={showMaintenance} disabled={appStore.requestsAreNotAllowed}/>
                 </div>
               : <div className='pools-list-item-phase-wrapper'>
-                  <div className='pools-list-item-phase'>Current phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.currentPhaseText}</div>
-                  <div className='pools-list-item-phase'>Rebalancing phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingPhase}</div>
-                  <div className='pools-list-item-phase'>Trading phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.tradingPhase}</div>
-                  {phaseInfo.stakingOnly && <div className='pools-list-item-phase'>Staking (only) phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingOnly}</div>}
-                  <div className='pools-list-item-phase'>Waiting phase: {appStore.requestsAreNotAllowed ? 'Please check your network'  : phaseInfoIsLoading ? 'Loading...' : phaseInfo.notInitialized}</div>
+                  <div className='pools-list-item-phase-current'>Current phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : <div className='current-phase-text'>{phaseInfo.currentPhaseText}</div>}</div>
+                  <div className={`pools-list-item-phase ${'REBALANCING' === phaseInfo.currentPhaseText && 'bold-text'}`}>Rebalancing phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingPhase}</div>
+                  <div className={`pools-list-item-phase ${'TRADING' === phaseInfo.currentPhaseText && 'bold-text'}`}>Trading phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.tradingPhase}</div>
+                  {phaseInfo.stakingOnly && <div className={`pools-list-item-phase ${'STAKING (ONLY)' === phaseInfo.currentPhaseText && 'bold-text'}`}>Staking (only) phase: {appStore.requestsAreNotAllowed ? 'Please check your network' : phaseInfoIsLoading ? 'Loading...' : phaseInfo.stakingOnly}</div>}
+                  <div className={`pools-list-item-phase ${'WAITING' === phaseInfo.currentPhaseText && 'bold-text'}`}>Waiting phase: {appStore.requestsAreNotAllowed ? 'Please check your network'  : phaseInfoIsLoading ? 'Loading...' : phaseInfo.notInitialized}</div>
                 </div>
           }
         </div>
