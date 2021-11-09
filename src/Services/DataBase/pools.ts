@@ -111,6 +111,39 @@ export const bscPools = [
 
 export const polygonPools = [
   {
+    title: 'RealT 2661-2663 Cortland Rent insurance',
+    poolAddress: '0x20120864944fC47fed4821C1c4B1b6a7D400844b',
+    nominal: 1,
+    marginTitle: 'USDC',
+    isSuspended: false,
+    oracle: {
+      address: '0x739de5bea03346dee2c402f0499409f43b78cd3c',
+      type: OracleTypeEnum.OPTIMISTIC
+    }
+  },
+  {
+    title: 'RealT 20160 Conant Rent insurance',
+    poolAddress: '0xCd9955ba381e408575Acca4F712573c5f6e4b174',
+    nominal: 1,
+    marginTitle: 'USDC',
+    isSuspended: false,
+    oracle: {
+      address: '0x614fc2a2d689b38f8f711f300ce1f924fa230513',
+      type: OracleTypeEnum.OPTIMISTIC
+    }
+  },
+  {
+    title: 'RealT 5517-5519 Elmhurst Rent insurance',
+    poolAddress: '0xcd465bedccBF1Bd89998757563f4A3b3D6bb01B6',
+    nominal: 1,
+    marginTitle: 'USDC',
+    isSuspended: false,
+    oracle: {
+      address: '0x0e6ab9aeaa60778ab6758dd094ef2e12cb301f14',
+      type: OracleTypeEnum.OPTIMISTIC
+    }
+  },
+  {
     title: 'RealT 10700 Whittier Rent insurance',
     poolAddress: '0xA4fe26FcA5F20F6c4e691EF60AD55712b6B26348',
     nominal: 1,

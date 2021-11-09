@@ -346,7 +346,7 @@ export const withdrawPosition = async (
 
 export const getStakedBalance = async (poolAddress: string, userAddress: string): Promise<string> => {
   try {
-    const contract = createStakingContractInstance(poolAddress)
+    const contract = createReadOnlyStakingContractInstance(poolAddress)
     const tokenAddress = await contract?.methods.underlying().call({from: userAddress})
     const tokenContract = createTokenContractInstance(tokenAddress)
     return await contract?.methods.balanceOf(userAddress).call().then((userShares: string) => {
@@ -366,7 +366,7 @@ export const getStakedBalance = async (poolAddress: string, userAddress: string)
 
 
 export const getPoolPhase = async (poolAddress: string) => {
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
   const {endTime} = await stakingContract?.methods.derivative().call()
   const epochLength = await stakingContract?.methods.EPOCH().call()
   const stakingPhaseLength = await stakingContract?.methods.STAKING_PHASE().call()
@@ -511,7 +511,7 @@ export const initializeEpoch = async (
 }
 
 export const isPoolMaintainable = async (poolAddress: string) => {
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
   const derivative = await stakingContract?.methods.derivative().call()
   const { endTime } = derivative
   const now = Number((Date.now() / 1000).toFixed())
