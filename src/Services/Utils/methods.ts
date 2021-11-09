@@ -27,7 +27,7 @@ export const makeApprove = async (
 ): Promise<string> => {
 
   // Create contracts instances 
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
   const tokenAddress =  marginAddress || await stakingContract?.methods.underlying().call()
   const tokenContract = createTokenContractInstance(tokenAddress)
 
@@ -43,7 +43,7 @@ export const checkTokenBalance = async (
   value: number
 ) => {
   try {
-    const stakingContract = createStakingContractInstance(poolAddress)
+    const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
     const decimals = await stakingContract?.methods.decimals().call()
     const tokenAddress =  await stakingContract?.methods.underlying().call()
     const tokenContract = createTokenContractInstance(tokenAddress)
@@ -62,7 +62,7 @@ export const checkStakedBalance = async (
   value: number
 ) => {
   try {
-    const stakingContract = createStakingContractInstance(poolAddress)
+    const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
     const shares = await stakingContract?.methods.balanceOf(userAddress).call()
     const balanceBN = await stakingContract?.methods.calculateSharesToUnderlyingRatio(shares).call()
     const decimals = await stakingContract?.methods.decimals().call()
@@ -89,7 +89,7 @@ export const checkAllowance = async (
 ) => {
 
   // Create contracts instances 
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
   const tokenAddress = await stakingContract?.methods.underlying().call({from: userAddress})
 
   // Check allowance
@@ -189,7 +189,7 @@ export const getPremium = async (
 ) => {
   const { poolAddress, nominal } = pool
   let premium
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
 
   const quantity = Math.floor(value / nominal)
   const { availableQuantity } = await stakingContract?.methods.getAvailableQuantity().call()
@@ -454,7 +454,7 @@ export const callOracle = async (
   onError: (error: Error) => void
 ) => {
   const oracleContract = createOracleWithCallbackContractInstance(oracleAddress)
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
 
   const derivative = await stakingContract?.methods.derivative().call()
   const { endTime } = derivative
@@ -470,7 +470,7 @@ export const executeLong = async (
   onConfirm: () => void, 
   onError: (error: Error) => void
 ) => {
-  const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
   const longPositionWrapper = await stakingContract?.methods.longPositionWrapper().call()
   const longPositionTokenContract = createOpiumIERC20PositionContractInstance(longPositionWrapper)
 
