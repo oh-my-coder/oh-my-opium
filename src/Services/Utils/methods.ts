@@ -43,14 +43,8 @@ export const checkTokenBalance = async (
     const stakingContract = createReadOnlyStakingContractInstance(poolAddress)
     const decimals = await stakingContract?.methods.decimals().call()
     const tokenAddress =  await stakingContract?.methods.underlying().call()
-    console.log({tokenAddress})
-
     const tokenContract = createTokenContractInstance(tokenAddress)
-    console.log({tokenContract})
-
     const balanceBN = await tokenContract?.methods.balanceOf(userAddress).call()
-    console.log({balanceBN})
-
     const balance = +convertFromBN(balanceBN, decimals)
     return value > balance
   } catch (e) {
@@ -152,11 +146,11 @@ export const buyProduct = async (
 
   // Create contracts instances 
   const stakingContract = createStakingContractInstance(poolAddress)
+  const stakingContractReadOnly = createReadOnlyStakingContractInstance(poolAddress)
 
   // Calculate metadata
-  const decimals = await stakingContract?.methods.decimals().call()
+  const decimals = await stakingContractReadOnly?.methods.decimals().call()
   const quantity = Math.floor(value/nominal)
-
   const premium = await getPremium(value, pool)
 
   if (!premium) return onInsufficientLiquidity()
