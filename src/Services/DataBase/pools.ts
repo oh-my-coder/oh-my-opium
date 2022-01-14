@@ -19,7 +19,19 @@ import {positions as turboMATIC} from './positions/polygon/turboMATIC'
 
 
 export const ethPools = [
-  {
+{
+    title: '$OPIUM Option Call',    
+    poolAddress: '0xc1650f389de9056636d968832eb63382e3970fa1',    
+    nominal: 1,    
+    isSuspended: false,    
+    marginTitle: 'OPIUM',    
+    positions: opiumOptionCall,    
+    oracle: {      
+      address: '0x64dcb00e36a6238dad28e59c71c5214500539ef7',      
+      type: OracleTypeEnum.OPTIMISTIC
+    }, 
+} 
+{
     title: 'USDT Protection',
     poolAddress: '0x5afFE41805a9E57fEd3657d0e64D96aeA0B77885',
     nominal: 1,
