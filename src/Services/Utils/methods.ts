@@ -257,7 +257,8 @@ export const getPurchasedProducts = async (
   let toBlock = fromBlock + blocksInBatch 
   const batchAmount = Math.ceil((latestBlock - fromBlock) / blocksInBatch)
 
-  for (let i of Array(batchAmount)) {
+  // for (let i of Array(batchAmount)) {
+  for (let i = 0; i <  batchAmount; i++) {
     try {
       // Waiting time between requests
       await new Promise(resolve => setTimeout(resolve, 1000))
