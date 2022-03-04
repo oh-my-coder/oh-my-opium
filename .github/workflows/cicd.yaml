@@ -1,0 +1,33 @@
+name: "CI/CD Pipeline"
+on: 
+  push:
+      branches:
+        - master
+
+jobs:
+  lintBuildAndPublish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - name: Setup Node.js
+      uses: actions/setup-node@v2-beta
+      with:
+        node-version: '10'
+        check-latest: true
+    - name: Cache yarn
+      uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Install dependencies
+      run: yarn
+    - name: Check TypeScript
+      run: yarn build
+    - uses: aquiladev/ipfs-action@v1
+      with:
+        path: ./build
+        service: pinata
+        pinataKey: ${{ secrets.PINATA_KEY }}
+        pinataSecret: ${{ secrets.PINATA_SECRET }}
